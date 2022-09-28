@@ -12,9 +12,20 @@ cd jetson
 pip install -r requirements.txt
 ```
 
+## Running tests
+
+```console
+    python -m pytest
+```
+
 ## Arduino Development Environment
 
 ### Vscode environment setup
+
+Press F1 and write "Arduino: Library Manager".
+Look for a library called arduinounit and install it.
+https://github.com/mmurdoch/arduinounit/
+
 
 ## Standards
 
