@@ -1,0 +1,25 @@
+Fazer lista de materiais!=Fazer lista de compras
+Sinais cadeira de rodas: centrada em "" 20% para cima para baixo, feita por ampops V e w (frente e tras, velocidade angular)
+
+// Arquitetura do projeto 
+
+- Pasta de Python:	tratamento de dados : 
+								
+								Interrupção do sinal do joystick para o motor quando identifica objeto;
+								Processa a informação do sslidar;
+	
+- Pasta de Arduino:	conversão AD / DA 
+				sinalização ao motor quando parar
+
+
+
+// Assumimos: 
+
+- Tensão de saída do arduino 0:3.3V (Para velocidade e omega), circuito de transição já existe... (hopefully)
+- Inicialmente só nos interessa parar a cadeira, não desviar e / ou desacelerar
+
+// Distribuição: 
+- João:		Calibração Joystick; 
+- Francisco:	Joystick IO; 
+- Tiago Correia: 	Comunicação Jetson -> Arduino; 
+- David:		Ficheiro(s) de Teste(s);
