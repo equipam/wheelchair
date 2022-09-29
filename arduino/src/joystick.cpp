@@ -1,6 +1,5 @@
 //TODO #3 Identify axis boundaries (XY) on the joystick setup and map them to known scales
 
-#include <tuple>
 #include "joystick.h"
 
 Joystick::Joystick(int xPin, int yPin){

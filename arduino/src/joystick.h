@@ -1,7 +1,6 @@
 #ifndef JOYSTICK_H
 #define JOYSTICK_H
 
-#include <tuple>
 #include "coordinates.h"
 
 #define MIN_X 0
