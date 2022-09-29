@@ -1,12 +1,10 @@
 //TODO: #1 Create function that converts the joystick XY coordinates to Velocity Omega wheelchair input
 
 #include <tuple>
+#include "coordinates.h"
 
-class Coordinates
-{
-public:
-    std::tuple<float, float> xyToVelocityAngle(float x, float y) {
-        // magic
-        return std::tuple<float, float>(0,0);
-    }
-};
+PolarCoords Coordinates::linearToPolar(LinearCoords coords) {
+    // magic ...
+    PolarCoords polarCoords = {.v = 0.0, .omega = 0.0};
+    return polarCoords;
+}
