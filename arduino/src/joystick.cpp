@@ -20,3 +20,10 @@ LinearCoords Joystick::joystickMapping(LinearCoords realCoords){
     LinearCoords normalizedCoords = {.x = 0.0, .y = 0.0};
     return normalizedCoords;
 }
+
+LinearCoords Joystick::position(){
+    // magic ...
+    //TODO Create function that returns joystick normalized position
+    LinearCoords pos = {.x = 0.0, .y = 0.0};
+    return pos;
+}
