@@ -23,7 +23,7 @@ LinearCoords Joystick::joystickMapping(LinearCoords realCoords){
 
 LinearCoords Joystick::position(){
     // magic ...
-    //TODO Create function that returns joystick normalized position
+    //TODO #11 Create function that returns joystick normalized position
     LinearCoords pos = {.x = 0.0, .y = 0.0};
     return pos;
 }
