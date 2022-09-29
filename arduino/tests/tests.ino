@@ -3,19 +3,15 @@
 
 #line 2 "tests.ino"
 #include <ArduinoUnit.h>
+//TODO Figure out if there is any way of importing .h files from other folder
+#include "coordinates.h"
 
-test(ok) 
+test(coordinates)
 {
-  int x=3;
-  int y=3;
-  assertEqual(x,y);
-}
-
-test(bad)
-{
-  int x=3;
-  int y=3;
-  assertNotEqual(x,y);
+  LinearCoords xy = {.x = 0, .y = 0};
+  PolarCoords vo = Coordinates::linearToPolar(xy);
+  assertEqual(vo.v, 1);
+  assertEqual(vo.omega, 1);
 }
 
 void setup()
