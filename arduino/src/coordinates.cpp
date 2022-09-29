@@ -2,7 +2,7 @@
 
 #include <tuple>
 
-class coordinates
+class Coordinates
 {
 public:
     std::tuple<float, float> xyToVelocityAngle(float x, float y) {
