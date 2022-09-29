@@ -21,7 +21,12 @@ LinearCoords joystickPosition;
 PolarCoords chairCoordsCommand;
 
 void setup(){
-    // pin setup
+    // Pin setup
+    pinMode(JOYSTICK_X_PIN, INPUT);
+    pinMode(JOYSTICK_Y_PIN, INPUT);
+    pinMode(INTERRUPT_PIN, INPUT);
+    pinMode(CHAIR_V_PIN, OUTPUT);
+    pinMode(CHAIR_OMEGA_PIN, OUTPUT);
     joystick.calibrate();
     return;
 }
@@ -37,7 +42,6 @@ void loop(){
             delay(100);
             joystickPosition = joystick.position();
         }
-        
     }
     chair.command(chairCoordsCommand);
 }
