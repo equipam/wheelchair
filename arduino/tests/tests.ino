@@ -3,15 +3,15 @@
 
 #line 2 "tests.ino"
 #include <ArduinoUnit.h>
-//TODO Figure out if there is any way of importing .h files from other folder
+//TODO Figure out how to create sym links compatible with Windows
 #include "coordinates.h"
 
 test(coordinates)
 {
-  LinearCoords xy = {.x = 0, .y = 0};
+  LinearCoords xy = {.x = -1, .y = 0};
   PolarCoords vo = Coordinates::linearToPolar(xy);
   assertEqual(vo.v, 1);
-  assertEqual(vo.omega, 1);
+  assertEqual(vo.omega, 90); // omega between -180 and 180 degrees ?
 }
 
 void setup()
