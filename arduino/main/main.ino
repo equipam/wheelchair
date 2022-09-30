@@ -1,10 +1,12 @@
 // Production code
 //TODO #7 Create arduino main routine logic
 
-#include "coordinates.h"
-#include "interrupt.h"
-#include "joystick.h"
-#include "chair.h"
+
+#include "Coordinates.h"
+#include "Interrupt.h"
+#include "Joystick.h"
+#include "Chair.h"
+#include "PinInterface.h"
 
 // TODO Decide pin layout
 #define JOYSTICK_X_PIN 0
@@ -13,9 +15,10 @@
 #define CHAIR_V_PIN 3
 #define CHAIR_OMEGA_PIN 4
 
-Joystick joystick = Joystick(JOYSTICK_X_PIN, JOYSTICK_Y_PIN);
-Interrupt interrupt = Interrupt(INTERRUPT_PIN);
-Chair chair = Chair(CHAIR_V_PIN, CHAIR_OMEGA_PIN);
+RealPinInterface pinInterface;
+Joystick joystick = Joystick(JOYSTICK_X_PIN, JOYSTICK_Y_PIN, &pinInterface);
+Interrupt interrupt = Interrupt(INTERRUPT_PIN, &pinInterface);
+Chair chair = Chair(CHAIR_V_PIN, CHAIR_OMEGA_PIN, &pinInterface);
 
 LinearCoords joystickPosition;
 PolarCoords chairCoordsCommand;

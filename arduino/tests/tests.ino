@@ -3,8 +3,8 @@
 
 #line 2 "tests.ino"
 #include <ArduinoUnit.h>
-//TODO Figure out how to create sym links compatible with Windows
-#include "coordinates.h"
+//TODO Figure out if there is any way of importing .h files from other folder
+#include "Coordinates.h"
 
 test(coordinates)
 {

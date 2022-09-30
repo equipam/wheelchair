@@ -1,8 +1,9 @@
-#include "chair.h"
+#include "Chair.h"
 
-Chair::Chair(int vPin, int omegaPin){
+Chair::Chair(int vPin, int omegaPin, PinInterface* pinInterface){
     this->vPin = vPin;
     this->omegaPin = omegaPin;
+    this->pinInterface = pinInterface;
     return;
 }
 
