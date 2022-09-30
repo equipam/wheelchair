@@ -104,6 +104,25 @@ test(joystick_position)
   assertEqual(position.y, expectedY);
 }
 
+test(joystick_mapping)
+{
+  // Assuming our scale is [0, 1] in both x and y axis
+  MockPinInterface interface; // fake pin interface
+  Joystick joystick = Joystick(0, 1, &interface);
+  joystick.realBounds.minX = 0.0;
+  joystick.realBounds.maxX = 3.0;
+  joystick.realBounds.minY = 0.0;
+  joystick.realBounds.maxY = 3.0;
+
+  float expectedX = (STANDARDIZED_X_MAX-STANDARDIZED_X_MIN)/2;
+  float expectedY = (STANDARDIZED_Y_MAX-STANDARDIZED_Y_MIN)/2;
+  LinearCoords realPosition = {.x = 1.5, .y = 1.5};
+  LinearCoords standardizedPosition = joystick.joystickMapping(realPosition);
+
+  assertEqual(standardizedPosition.x, expectedX);
+  assertEqual(standardizedPosition.y, expectedY);
+}
+
 test(coordinates)
 {
   LinearCoords xy = {.x = -1, .y = 0};
