@@ -24,13 +24,15 @@ LinearCoords joystickPosition;
 PolarCoords chairCoordsCommand;
 
 void setup(){
+    Serial.begin(9600);
+    while(!Serial) {}
     // Pin setup
     pinMode(JOYSTICK_X_PIN, INPUT);
     pinMode(JOYSTICK_Y_PIN, INPUT);
     pinMode(INTERRUPT_PIN, INPUT);
     pinMode(CHAIR_V_PIN, OUTPUT);
     pinMode(CHAIR_OMEGA_PIN, OUTPUT);
-    joystick.calibrate();
+    joystick.calibrate(Serial);
     return;
 }
 
