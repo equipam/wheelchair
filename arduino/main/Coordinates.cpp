@@ -1,6 +1,6 @@
 //TODO: #1 Create function that converts the joystick XY coordinates to Velocity Omega wheelchair input
 
-#include "coordinates.h"
+#include "Coordinates.h"
 
 PolarCoords Coordinates::linearToPolar(LinearCoords coords) {
     // magic ...
