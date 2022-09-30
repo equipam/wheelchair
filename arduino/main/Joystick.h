@@ -3,6 +3,7 @@
 
 #include "Coordinates.h"
 #include "PinInterface.h"
+#include <Stream.h>
 
 #define MIN_X 0
 #define MAX_X 3.3
@@ -20,15 +21,18 @@ struct JoystickBounds
 class Joystick
 {
 private:
-    JoystickBounds realBounds;
     int xPin;
     int yPin;
     PinInterface* pinInterface;
-    LinearCoords joystickMapping(LinearCoords realCoords);
-
 public:
+    JoystickBounds realBounds;
     Joystick(int xPin, int yPin, PinInterface* pinInterface);
-    void calibrate();
+    void calibrate(Stream &io);
+    void calibrate_left(Stream &io);
+    void calibrate_right(Stream &io);
+    void calibrate_front(Stream &io);
+    void calibrate_back(Stream &io);
+    LinearCoords joystickMapping(LinearCoords realCoords);
     LinearCoords position();
 };
 
