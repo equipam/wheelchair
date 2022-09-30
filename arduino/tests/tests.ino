@@ -3,20 +3,25 @@
 
 #line 2 "tests.ino"
 #include <ArduinoUnit.h>
+#include <Stream.h>
 //TODO Figure out if there is any way of importing .h files from other folder
 #include "Coordinates.h"
 #include "PinInterface.h"
 #include "Joystick.h"
-#include <Stream.h>
 #include "Interrupt.h"
+#include "Chair.h"
 
 #define FAKE_PIN_AMMONT 5
 #define OPERATING_VOLTAGE 5
 #define ANALOG_RESOLUTION 5/1024
-#define STANDARDIZED_X_MIN 0
+#define STANDARDIZED_X_MIN -1
 #define STANDARDIZED_X_MAX 1
-#define STANDARDIZED_Y_MIN 0
+#define STANDARDIZED_Y_MIN -1
 #define STANDARDIZED_Y_MAX 1
+#define STANDARDIZED_V_MIN -1
+#define STANDARDIZED_V_MAX 1
+#define STANDARDIZED_OMEGA_MIN -1
+#define STANDARDIZED_OMEGA_MAX 1
 
 
 int pins[FAKE_PIN_AMMONT] = {0};
@@ -141,6 +146,24 @@ test(interrupt)
   interface.doDigitalWrite(interruptPin, LOW);
   mustStop = interrupt.mustStop();
   assertEqual(mustStop, false);
+}
+
+test(chair)
+{
+  clearPins();
+  uint8_t vPin = 0;
+  uint8_t omegaPin = 1;
+  MockPinInterface interface;
+
+  Chair chair = Chair(vPin, omegaPin, &interface);
+  // command the max speed at max angle
+  PolarCoords command = {.v = STANDARDIZED_V_MAX, .omega = STANDARDIZED_OMEGA_MAX};
+
+  chair.command(command);
+  
+  // should be max voltage on both v and omega pins (3.3)
+  assertEqual(pins[0], 3.3);
+  assertEqual(pins[1], 3.3);
 }
 
 test(coordinates)
