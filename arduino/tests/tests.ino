@@ -8,6 +8,7 @@
 #include "PinInterface.h"
 #include "Joystick.h"
 #include <Stream.h>
+#include "Interrupt.h"
 
 #define FAKE_PIN_AMMONT 5
 #define OPERATING_VOLTAGE 5
@@ -121,6 +122,25 @@ test(joystick_mapping)
 
   assertEqual(standardizedPosition.x, expectedX);
   assertEqual(standardizedPosition.y, expectedY);
+}
+
+test(interrupt)
+{
+  clearPins();
+  int interruptPin = 0;
+  bool mustStop;
+  MockPinInterface interface;
+  Interrupt interrupt = Interrupt(interruptPin, &interface);
+
+  // interrupt pin is high, must stop
+  interface.doDigitalWrite(interruptPin, HIGH);
+  mustStop = interrupt.mustStop();
+  assertEqual(mustStop, true);
+
+  // interrupt pin is low, must stop
+  interface.doDigitalWrite(interruptPin, LOW);
+  mustStop = interrupt.mustStop();
+  assertEqual(mustStop, false);
 }
 
 test(coordinates)
