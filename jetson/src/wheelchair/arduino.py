@@ -1,6 +1,6 @@
 #TODO #4 Create interface between Jetson Nano and Arduino
 
-import JetsonNano.GPIO as GPIO       #Necessary inicial set up
+import Jetson.GPIO as GPIO       #Necessary inicial set up
 
 class Arduino:
     def __init__(self, pin_number) -> None:
