@@ -7,3 +7,13 @@ else
 	cp --symbolic-link $(PWD)/arduino/main/*.h $(PWD)/arduino/tests/
 	cp --symbolic-link $(PWD)/arduino/main/*.cpp $(PWD)/arduino/tests/
 endif
+
+dev-setup: sym-links
+
+# --- TESTS
+unit-tests:
+	python -m pytest ./jetson/src
+acceptance-tests:
+	python -m pytest ./jetson/tests
+
+test: unit-tests acceptance-tests
