@@ -32,7 +32,17 @@ void setup(){
     pinMode(INTERRUPT_PIN, INPUT);
     pinMode(CHAIR_V_PIN, OUTPUT);
     pinMode(CHAIR_OMEGA_PIN, OUTPUT);
-    joystick.calibrate(Serial);
+
+    // Calibration process
+    Serial.write("Place the joystick forward. Press return");
+    joystick.calibrate_front(Serial);
+    Serial.write("Place the joystick back. Press return");
+    joystick.calibrate_back(Serial);
+    Serial.write("Place the joystick left. Press return");
+    joystick.calibrate_left(Serial);
+    Serial.write("Place the joystick right. Press return");
+    joystick.calibrate_right(Serial);
+
     return;
 }
 
@@ -42,7 +52,7 @@ void loop(){
     if(interrupt.mustStop()){
         joystickPosition = joystick.position();
         // Wait until user let go of the joystick
-        while (joystickPosition.x != 0 && joystickPosition.y != 0)
+        while (joystickPosition.x != 0 && joystickPosition.y != 0 && interrupt.mustStop())
         {
             delay(100);
             joystickPosition = joystick.position();
