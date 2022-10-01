@@ -8,7 +8,7 @@ class SSLidar:
 
     @property
     def distance(self):
-        # TODO Create function that gets the distance from Lidar
+        # TODO #14 Create function that gets the distance from Lidar
         pass
 
     @property
