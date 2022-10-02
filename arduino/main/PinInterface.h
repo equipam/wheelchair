@@ -3,8 +3,7 @@
 
 #include <stdint.h>
 
-#define FROM_ANALOG_COEFFICIENT 5 / 1023
-#define TO_ANALOG_COEFFICIENT 1023 / 5
+#define ANALOG_RESOLUTION 5 / 1023
 
 class PinInterface
 {

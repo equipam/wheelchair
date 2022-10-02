@@ -13,11 +13,11 @@ int RealPinInterface::doDigitalRead(uint8_t pin)
 
 void RealPinInterface::doAnalogWrite(uint8_t pin, float val)
 {
-    int realVal = static_cast<int>(val * TO_ANALOG_COEFFICIENT);
+    int realVal = static_cast<int>(val / ANALOG_RESOLUTION);
     analogWrite(pin, val);
 }
 
 float RealPinInterface::doAnalogRead(uint8_t pin)
 {
-    return static_cast<float>(analogRead(pin) * FROM_ANALOG_COEFFICIENT);
+    return static_cast<float>(analogRead(pin) * ANALOG_RESOLUTION);
 }
