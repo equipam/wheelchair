@@ -1,5 +1,3 @@
-#TODO #4 Create interface between Jetson Nano and Arduino
-
 import Jetson.GPIO as GPIO       #Necessary inicial set up
 
 class Arduino:
