@@ -10,7 +10,7 @@ else
 endif
 
 deps:
-	cd jetson && python -m pip install -r requirements.txt
+	cd jetson && python -m pip install -r dev_requirements.txt
 
 dev-setup: deps sym-links
 
