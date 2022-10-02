@@ -1,10 +1,10 @@
 // Write unit tests here (Must still upload to an Arduino to test)
-//TODO #6 Write arduino acceptace tests
+// TODO #6 Write arduino acceptace tests
 
 #line 2 "tests.ino"
 #include <ArduinoUnit.h>
 #include <Stream.h>
-//TODO Figure out if there is any way of importing .h files from other folder
+// TODO Figure out if there is any way of importing .h files from other folder
 #include "Coordinates.h"
 #include "PinInterface.h"
 #include "Joystick.h"
@@ -13,7 +13,7 @@
 
 #define FAKE_PIN_AMMONT 5
 #define OPERATING_VOLTAGE 5
-#define ANALOG_RESOLUTION 5/1024
+#define ANALOG_RESOLUTION 5 / 1024
 #define STANDARDIZED_X_MIN -1
 #define STANDARDIZED_X_MAX 1
 #define STANDARDIZED_Y_MIN -1
@@ -23,27 +23,33 @@
 #define STANDARDIZED_OMEGA_MIN -1
 #define STANDARDIZED_OMEGA_MAX 1
 
-
 float pins[FAKE_PIN_AMMONT] = {0};
 
-void clearPins(){
-  for (size_t i = 0; i < FAKE_PIN_AMMONT; i++) pins[i] = 0.0;
+void clearPins()
+{
+  for (size_t i = 0; i < FAKE_PIN_AMMONT; i++)
+    pins[i] = 0.0;
 }
 
-class MockPinInterface: public PinInterface{
+class MockPinInterface : public PinInterface
+{
 public:
-    void doDigitalWrite(uint8_t pin, uint8_t val){
-      pins[pin] = static_cast<float>val;
-    }
-    int doDigitalRead(uint8_t pin){
-      return static_cast<int>pins[pin];
-    }
-    void doAnalogWrite(uint8_t pin, float val){
-      pins[pin] = val;
-    }
-    float doAnalogRead(uint8_t pin){
-      return pins[pin];
-    }
+  void doDigitalWrite(uint8_t pin, uint8_t val)
+  {
+    pins[pin] = static_cast<float>(val);
+  }
+  int doDigitalRead(uint8_t pin)
+  {
+    return static_cast<int>(pins[pin]);
+  }
+  void doAnalogWrite(uint8_t pin, float val)
+  {
+    pins[pin] = val;
+  }
+  float doAnalogRead(uint8_t pin)
+  {
+    return pins[pin];
+  }
 };
 
 test(joystick_calibration)
@@ -53,28 +59,28 @@ test(joystick_calibration)
   uint8_t xPin = 0;
   uint8_t yPin = 1;
 
-  MockStream ms; // fake serial port
+  MockStream ms;              // fake serial port
   MockPinInterface interface; // fake pin interface
   Joystick joystick = Joystick(xPin, yPin, &interface);
 
   // User places joystick in each position and presses return key
-  interface.doAnalogWrite(xPin, 0.1*ANALOG_RESOLUTION);
-  interface.doAnalogWrite(yPin, 3/2*ANALOG_RESOLUTION);
+  interface.doAnalogWrite(xPin, 0.1 * ANALOG_RESOLUTION);
+  interface.doAnalogWrite(yPin, 3 / 2 * ANALOG_RESOLUTION);
   ms.input.print("\n");
   joystick.calibrate_left(ms);
 
-  interface.doAnalogWrite(xPin, 3*ANALOG_RESOLUTION);
-  interface.doAnalogWrite(yPin, 3/2*ANALOG_RESOLUTION);
+  interface.doAnalogWrite(xPin, 3 * ANALOG_RESOLUTION);
+  interface.doAnalogWrite(yPin, 3 / 2 * ANALOG_RESOLUTION);
   ms.input.print("\n");
   joystick.calibrate_right(ms);
 
-  interface.doAnalogWrite(xPin, 3/2*ANALOG_RESOLUTION);
-  interface.doAnalogWrite(yPin, 3*ANALOG_RESOLUTION);
+  interface.doAnalogWrite(xPin, 3 / 2 * ANALOG_RESOLUTION);
+  interface.doAnalogWrite(yPin, 3 * ANALOG_RESOLUTION);
   ms.input.print("\n");
   joystick.calibrate_front(ms);
 
-  interface.doAnalogWrite(xPin, 3/2*ANALOG_RESOLUTION);
-  interface.doAnalogWrite(yPin, 0.1*ANALOG_RESOLUTION);
+  interface.doAnalogWrite(xPin, 3 / 2 * ANALOG_RESOLUTION);
+  interface.doAnalogWrite(yPin, 0.1 * ANALOG_RESOLUTION);
   ms.input.print("\n");
   joystick.calibrate_back(ms);
 
@@ -99,10 +105,10 @@ test(joystick_position)
   joystick.realBounds.minY = 0.0;
   joystick.realBounds.maxY = 3.0;
   // Joystick is halfway in both axis
-  float expectedX = (STANDARDIZED_X_MAX-STANDARDIZED_X_MIN)/2;
-  float expectedY = (STANDARDIZED_Y_MAX-STANDARDIZED_Y_MIN)/2;
-  interface.doAnalogWrite(xPin, 3/2*ANALOG_RESOLUTION);
-  interface.doAnalogWrite(yPin, 3/2*ANALOG_RESOLUTION);
+  float expectedX = (STANDARDIZED_X_MAX - STANDARDIZED_X_MIN) / 2;
+  float expectedY = (STANDARDIZED_Y_MAX - STANDARDIZED_Y_MIN) / 2;
+  interface.doAnalogWrite(xPin, 3 / 2 * ANALOG_RESOLUTION);
+  interface.doAnalogWrite(yPin, 3 / 2 * ANALOG_RESOLUTION);
 
   LinearCoords position = joystick.position();
 
@@ -120,8 +126,8 @@ test(joystick_mapping)
   joystick.realBounds.minY = 0.0;
   joystick.realBounds.maxY = 3.0;
 
-  float expectedX = (STANDARDIZED_X_MAX-STANDARDIZED_X_MIN)/2;
-  float expectedY = (STANDARDIZED_Y_MAX-STANDARDIZED_Y_MIN)/2;
+  float expectedX = (STANDARDIZED_X_MAX - STANDARDIZED_X_MIN) / 2;
+  float expectedY = (STANDARDIZED_Y_MAX - STANDARDIZED_Y_MIN) / 2;
   LinearCoords realPosition = {.x = 1.5, .y = 1.5};
   LinearCoords standardizedPosition = joystick.joystickMapping(realPosition);
 
@@ -160,7 +166,7 @@ test(chair)
   PolarCoords command = {.v = STANDARDIZED_V_MAX, .omega = STANDARDIZED_OMEGA_MAX};
 
   chair.command(command);
-  
+
   // should be max voltage on both v and omega pins (3.3)
   assertEqual(pins[0], 3.3);
   assertEqual(pins[1], 3.3);
@@ -177,7 +183,9 @@ test(coordinates)
 void setup()
 {
   Serial.begin(9600);
-  while(!Serial) {} // Portability for Leonardo/Micro
+  while (!Serial)
+  {
+  } // Portability for Leonardo/Micro
 }
 
 void loop()
