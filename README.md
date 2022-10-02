@@ -15,7 +15,14 @@ pip install -r requirements.txt
 ## Running Python tests
 
 ```console
-    python -m pytest
+make test
+```
+
+Or
+
+```console
+cd jetson
+python -m pytest
 ```
 
 ---
