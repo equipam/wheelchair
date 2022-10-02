@@ -12,8 +12,8 @@ dev-setup: sym-links
 
 # --- TESTS
 unit-tests:
-	python -m pytest ./jetson/src
+	cd jetson && python -m pytest src
 acceptance-tests:
-	python -m pytest ./jetson/tests
+	cd jetson && python -m pytest tests
 
 test: unit-tests acceptance-tests
