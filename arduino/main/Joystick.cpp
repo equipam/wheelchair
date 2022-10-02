@@ -27,8 +27,6 @@ void Joystick::calibrate_back(Stream &io){
 }
 
 LinearCoords Joystick::joystickMapping(LinearCoords realCoords){
-    // vx and vy are real values from the joystick
-    // returns normalized values of x and y on a tuple
     LinearCoords normalizedCoords = {.x = 0.0, .y = 0.0};
     normalizedCoords.x = realCoords.x / abs(realBounds.maxX-realBounds.minX);
     normalizedCoords.y = realCoords.y / abs(realBounds.maxY-realBounds.minY); 
