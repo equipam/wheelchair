@@ -3,26 +3,36 @@
 This repository holds the code developed for Systems Engineering @FEUP on 2022/2023.
 It's purpose is to control an eletric wheelchair and, using sensors, avoid front collisions.
 
-## Jetson Development Environment
+---
 
-Setup dependencies
+## Windows development depedencies
+
+- [Python](https://www.python.org/downloads/) 3.8 or above
+- [Arduino IDE](https://www.arduino.cc/en/software)
+- Choco package manager (install instructions [here](#make))
+- Make (install instructions [here](#choco-package-manager))
+- [Visual Studio Code](https://code.visualstudio.com/) (Optional)
+
+## Linux development depedencies
+
+- [Python](https://www.python.org/downloads/) 3.8 or above
+- [Arduino IDE](https://www.arduino.cc/en/software)
+- [Visual Studio Code](https://code.visualstudio.com/) (Optional)
+
+---
+
+## Make targets
+
+Prepare development environment
 
 ```console
-cd jetson
-pip install -r requirements.txt
+make dev-setup
 ```
 
-## Running Python tests
+Running Python tests
 
 ```console
 make test
-```
-
-Or
-
-```console
-cd jetson
-python -m pytest
 ```
 
 ---
@@ -66,6 +76,36 @@ Look for a library called arduinounit and install it.
 <https://github.com/mmurdoch/arduinounit/>
 
 ---
+
+## Installation instructions
+
+### Choco Package Manager
+
+Open Powershell as admin and run:
+
+```console
+Get-ExecutionPolicy
+```
+
+If it returns "`Restricted`", then run
+
+```console
+Set-ExecutionPolicy AllSigned or Set-ExecutionPolicy Bypass -Scope Process.
+```
+
+Then, run this to install choco
+
+```console
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+```
+
+### Make
+
+(needs Choco to be installed)
+
+```console
+choco install make
+```
 
 ## Standards
 
