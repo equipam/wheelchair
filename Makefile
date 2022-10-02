@@ -18,6 +18,26 @@ dev-setup: deps sym-links
 
 # ---
 
+# --- Jetson Nano Setup
+
+JETSON_USER := user_name # TODO know what username we have in the jetson linux
+
+jetson-gpio:
+	sudo groupadd -f -r gpio
+	sudo usermod -a -G gpio $(JETSON_USER)
+	sudo cp jetson/99-gpio.rules /etc/udev/rules.d/
+	sudo udevadm control --reload-rules && sudo udevadm trigger
+
+jetson-deps:
+	cd jetson && python -m pip install -r requirements.txt
+
+jetson-cli:
+	sudo ln -s 
+
+jetson-setup: jetson-deps jetson-gpio
+	
+# ---
+
 # --- TESTS
 unit-tests:
 	cd jetson && python -m pytest src
