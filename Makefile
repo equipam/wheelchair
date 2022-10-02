@@ -1,7 +1,9 @@
 # --- DEVELOPMENT SETUP
 sym-links:
-ifeq ($(OS),Windows_NT)     # is Windows_NT on XP, 2000, 7, Vista, 10...
-	echo "Not implemented"
+ifeq ($(OS),Windows_NT)
+	cmd /c "for /f %F in ('dir arduino\main /b /a-d ^| findstr ".cpp .h"') do del arduino\tests\%F"
+	cmd /c "for /f %F in ('dir arduino\main /b /a-d ^| findstr ".cpp .h"') do mklink arduino\tests\%F arduino\main\%F"
+	ECHO "Finished creating Symbolic links"
 else
 	rm -f ./arduino/tests/*.cpp
 	rm -f ./arduino/tests/*.h
