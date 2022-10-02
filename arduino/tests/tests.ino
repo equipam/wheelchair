@@ -24,24 +24,24 @@
 #define STANDARDIZED_OMEGA_MAX 1
 
 
-int pins[FAKE_PIN_AMMONT] = {0};
+float pins[FAKE_PIN_AMMONT] = {0};
 
 void clearPins(){
-  for (size_t i = 0; i < FAKE_PIN_AMMONT; i++) pins[i] = 0;
+  for (size_t i = 0; i < FAKE_PIN_AMMONT; i++) pins[i] = 0.0;
 }
 
 class MockPinInterface: public PinInterface{
 public:
     void doDigitalWrite(uint8_t pin, uint8_t val){
-      pins[pin] = (int)val;
+      pins[pin] = static_cast<float>val;
     }
     int doDigitalRead(uint8_t pin){
-      return pins[pin];
+      return static_cast<int>pins[pin];
     }
-    void doAnalogWrite(uint8_t pin, int val){
+    void doAnalogWrite(uint8_t pin, float val){
       pins[pin] = val;
     }
-    int doAnalogRead(uint8_t pin){
+    float doAnalogRead(uint8_t pin){
       return pins[pin];
     }
 };
