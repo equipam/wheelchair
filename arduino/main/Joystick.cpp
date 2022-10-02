@@ -37,7 +37,8 @@ LinearCoords Joystick::position(){
     // magic ...
     //TODO #11 Create function that returns joystick normalized position
     LinearCoords pos = {.x = 0.0, .y = 0.0};
-    //get pos from joystick and normalize it
+    pos.x = digitalRead(xPin);
+    pos.y = digitalRead(yPin);
     pos = joystickMapping(pos);
     return pos;
 }
