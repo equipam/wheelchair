@@ -13,7 +13,6 @@ struct PolarCoords
     float omega;
 };
 
-
 class Coordinates
 {
 public:

@@ -9,11 +9,11 @@ class Chair
 private:
     int vPin;
     int omegaPin;
-    PinInterface* pinInterface;
+    PinInterface *pinInterface;
+
 public:
-    Chair(int vPin, int omegaPin, PinInterface* pinInterface);
+    Chair(int vPin, int omegaPin, PinInterface *pinInterface);
     void command(PolarCoords coords);
 };
-
 
 #endif

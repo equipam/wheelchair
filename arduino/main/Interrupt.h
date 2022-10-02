@@ -7,9 +7,10 @@ class Interrupt
 {
 private:
     int interruptPin;
-    PinInterface* pinInterface;
+    PinInterface *pinInterface;
+
 public:
-    Interrupt(int interruptPin,  PinInterface* pinInterface);
+    Interrupt(int interruptPin, PinInterface *pinInterface);
     bool mustStop();
 };
 

@@ -21,9 +21,12 @@ Chair chair = Chair(CHAIR_V_PIN, CHAIR_OMEGA_PIN, &pinInterface);
 LinearCoords joystickPosition;
 PolarCoords chairCoordsCommand;
 
-void setup(){
+void setup()
+{
     Serial.begin(9600);
-    while(!Serial) {}
+    while (!Serial)
+    {
+    }
     // Pin setup
     pinMode(JOYSTICK_X_PIN, INPUT);
     pinMode(JOYSTICK_Y_PIN, INPUT);
@@ -44,10 +47,12 @@ void setup(){
     return;
 }
 
-void loop(){
+void loop()
+{
     joystickPosition = joystick.position();
     chairCoordsCommand = Coordinates::linearToPolar(joystickPosition);
-    if(interrupt.mustStop()){
+    if (interrupt.mustStop())
+    {
         joystickPosition = joystick.position();
         // Wait until user let go of the joystick
         while (joystickPosition.x != 0 && joystickPosition.y != 0 && interrupt.mustStop())
@@ -58,4 +63,3 @@ void loop(){
     }
     chair.command(chairCoordsCommand);
 }
-
