@@ -11,6 +11,8 @@ Interrupt::Interrupt(int interruptPin, PinInterface *pinInterface)
 
 bool Interrupt::mustStop()
 {
-    // magic ...
-    return false;
+    if(this->pinInterface->doDigitalRead(this->interruptPin) == 1)
+        return true;
+    else return false;
+    
 }
