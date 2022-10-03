@@ -10,7 +10,6 @@
 #include "Chair.h"
 
 #define FAKE_PIN_AMMONT 5
-#define OPERATING_VOLTAGE 5
 
 float pins[FAKE_PIN_AMMONT] = {0};
 
