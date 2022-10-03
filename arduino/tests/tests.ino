@@ -1,10 +1,8 @@
-// Write unit tests here (Must still upload to an Arduino to test)
-// TODO #6 Write arduino acceptace tests
+// Write tests here (Must still upload to an Arduino to test)
 
 #line 2 "tests.ino"
 #include <ArduinoUnit.h>
 #include <Stream.h>
-// TODO Figure out if there is any way of importing .h files from other folder
 #include "Coordinates.h"
 #include "PinInterface.h"
 #include "Joystick.h"
