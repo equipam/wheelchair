@@ -31,8 +31,8 @@
   - #10 Calibração do joystick (até 2022-10-07)
 
 - Alexandre Queirós:
-  - #11 Normalização das coordenadas do joystick (até 2022-10-01)
+  - #11 Normalização das coordenadas do joystick (até 2022-10-07)
 
 - Tiago Correia:
   - #4 Interface em python de jetson nano para arduino (entregue 2022-10-01)
-  - #9 Comando dos motores da cadeira (até 2022-10-01)
+  - #9 Comando dos motores da cadeira (até 2022-10-07)
