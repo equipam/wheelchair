@@ -31,9 +31,6 @@ jetson-gpio:
 jetson-deps:
 	cd jetson && python -m pip install -r requirements.txt
 
-jetson-cli:
-	sudo ln -s 
-
 jetson-setup: jetson-deps jetson-gpio
 	
 # ---
