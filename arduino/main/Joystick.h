@@ -10,6 +10,11 @@
 #define MIN_Y 0
 #define MAX_X 3.3
 
+#define STANDARDIZED_X_MIN -1
+#define STANDARDIZED_X_MAX 1
+#define STANDARDIZED_Y_MIN -1
+#define STANDARDIZED_Y_MAX 1
+
 struct JoystickBounds
 {
     float minX = MIN_X;
