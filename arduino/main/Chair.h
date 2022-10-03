@@ -4,6 +4,11 @@
 #include "Coordinates.h"
 #include "PinInterface.h"
 
+#define STANDARDIZED_V_MIN -1
+#define STANDARDIZED_V_MAX 1
+#define STANDARDIZED_OMEGA_MIN -1
+#define STANDARDIZED_OMEGA_MAX 1
+
 class Chair
 {
 private:
