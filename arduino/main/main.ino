@@ -14,7 +14,7 @@
 
 RealPinInterface pinInterface;
 Joystick joystick = Joystick(JOYSTICK_X_PIN, JOYSTICK_Y_PIN, &pinInterface);
-// TODO Figure out if it's worth it to implement real arduino interrupt
+// TODO #17 Figure out if it's worth it to implement real arduino interrupt
 // * https://www.arduino.cc/reference/en/language/functions/external-interrupts/attachinterrupt/
 Interrupt interrupt = Interrupt(INTERRUPT_PIN, &pinInterface);
 Chair chair = Chair(CHAIR_V_PIN, CHAIR_OMEGA_PIN, &pinInterface);
