@@ -8,19 +8,27 @@
 
 #define JOYSTICK_X_PIN 19
 #define JOYSTICK_Y_PIN 20
-#define INTERRUPT_PIN 10
+#define HALT_PIN 5
+#define CONTINUE_PIN 6
 #define CHAIR_V_PIN 21
 #define CHAIR_OMEGA_PIN 22
 
 RealPinInterface pinInterface;
 Joystick joystick = Joystick(JOYSTICK_X_PIN, JOYSTICK_Y_PIN, &pinInterface);
-// TODO #17 Figure out if it's worth it to implement real arduino interrupt
-// * https://www.arduino.cc/reference/en/language/functions/external-interrupts/attachinterrupt/
-Interrupt interrupt = Interrupt(INTERRUPT_PIN, &pinInterface);
+Interrupt haltInterrupt = Interrupt(HALT_PIN);
+Interrupt continueInterrupt = Interrupt(CONTINUE_PIN);
 Chair chair = Chair(CHAIR_V_PIN, CHAIR_OMEGA_PIN, &pinInterface);
 
 LinearCoords joystickPosition;
 PolarCoords chairCoordsCommand;
+
+void stop(){
+    chair.changeState(false);
+}
+
+void proceed(){
+    chair.changeState(true);
+}
 
 void setup()
 {
@@ -28,12 +36,10 @@ void setup()
     while (!Serial)
     {
     }
-    // Pin setup
-    pinMode(JOYSTICK_X_PIN, INPUT);
-    pinMode(JOYSTICK_Y_PIN, INPUT);
-    pinMode(INTERRUPT_PIN, INPUT);
-    pinMode(CHAIR_V_PIN, OUTPUT);
-    pinMode(CHAIR_OMEGA_PIN, OUTPUT);
+
+    // Pin Setup
+    joystick.setup();
+    chair.setup();
 
     // Calibration process
     Serial.write("Place the joystick forward. Press return");
@@ -45,6 +51,10 @@ void setup()
     Serial.write("Place the joystick right. Press return");
     joystick.calibrate_right(Serial);
 
+    // Interrupt Setup
+    haltInterrupt.setup(stop, RISING);
+    continueInterrupt.setup(proceed, FALLING);
+
     return;
 }
 
@@ -52,15 +62,5 @@ void loop()
 {
     joystickPosition = joystick.position();
     chairCoordsCommand = Coordinates::linearToPolar(joystickPosition);
-    if (interrupt.mustStop())
-    {
-        joystickPosition = joystick.position();
-        // Wait until user let go of the joystick
-        while (joystickPosition.x != 0 && joystickPosition.y != 0 && interrupt.mustStop())
-        {
-            delay(100);
-            joystickPosition = joystick.position();
-        }
-    }
     chair.command(chairCoordsCommand);
 }
