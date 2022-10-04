@@ -33,6 +33,7 @@ private:
 public:
     JoystickBounds realBounds;
     Joystick(int xPin, int yPin, PinInterface* pinInterface);
+    void setup();
     void calibrate(Stream &io);
     void calibrate_left(Stream &io);
     void calibrate_right(Stream &io);

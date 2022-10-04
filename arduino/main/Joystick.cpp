@@ -8,6 +8,13 @@ Joystick::Joystick(int xPin, int yPin, PinInterface *pinInterface)
     return;
 }
 
+/// @brief Run this to setup joystick pins
+void Joystick::setup()
+{
+    pinMode(this->xPin, INPUT);
+    pinMode(this->yPin, INPUT);
+}
+
 void Joystick::calibrate(Stream &io)
 {
     // TODO #10 Create joystick calibration function
