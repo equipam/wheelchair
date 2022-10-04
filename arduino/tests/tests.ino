@@ -93,10 +93,10 @@ test(joystick_position)
   joystick.realBounds.minY = 0.0;
   joystick.realBounds.maxY = 3.0;
   // Joystick is halfway in both axis
-  float expectedX = (STANDARDIZED_X_MAX - STANDARDIZED_X_MIN) / 2;
-  float expectedY = (STANDARDIZED_Y_MAX - STANDARDIZED_Y_MIN) / 2;
-  interface.doAnalogWrite(xPin, 3 / 2 * ANALOG_RESOLUTION);
-  interface.doAnalogWrite(yPin, 3 / 2 * ANALOG_RESOLUTION);
+  float expectedX = (STANDARDIZED_X_MAX + STANDARDIZED_X_MIN) / 2;
+  float expectedY = (STANDARDIZED_Y_MAX + STANDARDIZED_Y_MIN) / 2;
+  interface.doAnalogWrite(xPin, 1.5);
+  interface.doAnalogWrite(yPin, 1.5);
 
   LinearCoords position = joystick.position();
 
