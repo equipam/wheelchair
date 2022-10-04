@@ -8,16 +8,15 @@
 
 #define JOYSTICK_X_PIN 19
 #define JOYSTICK_Y_PIN 20
-#define HALT_PIN 5
-#define CONTINUE_PIN 6
+#define INTERRUPT_PIN 5
 #define CHAIR_V_PIN 21
 #define CHAIR_OMEGA_PIN 22
 
 RealPinInterface pinInterface;
-Joystick joystick = Joystick(JOYSTICK_X_PIN, JOYSTICK_Y_PIN, &pinInterface);
-Interrupt haltInterrupt = Interrupt(HALT_PIN);
-Interrupt continueInterrupt = Interrupt(CONTINUE_PIN);
-Chair chair = Chair(CHAIR_V_PIN, CHAIR_OMEGA_PIN, &pinInterface);
+Joystick joystick(JOYSTICK_X_PIN, JOYSTICK_Y_PIN, &pinInterface);
+Interrupt haltInterrupt(INTERRUPT_PIN);
+Interrupt continueInterrupt(INTERRUPT_PIN);
+Chair chair(CHAIR_V_PIN, CHAIR_OMEGA_PIN, &pinInterface);
 
 LinearCoords joystickPosition;
 PolarCoords chairCoordsCommand;
