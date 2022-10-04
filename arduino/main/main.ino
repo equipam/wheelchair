@@ -22,11 +22,11 @@ LinearCoords joystickPosition;
 PolarCoords chairCoordsCommand;
 
 void stop(){
-    chair.changeState(false);
+    chair.setHalt(false);
 }
 
 void proceed(){
-    chair.changeState(true);
+    chair.setHalt(true);
 }
 
 void setup()

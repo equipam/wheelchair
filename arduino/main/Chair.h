@@ -27,7 +27,7 @@ public:
     Chair(int vPin, int omegaPin, PinInterface *pinInterface);
     void setup();
     void command(PolarCoords coords);
-    void changeState(bool state);
+    void setHalt(bool state);
 };
 
 #endif

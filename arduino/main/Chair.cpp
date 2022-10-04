@@ -41,7 +41,7 @@ void Chair::command(PolarCoords coords)
     return;
 }
 
-void Chair::changeState(bool state)
+void Chair::setHalt(bool state)
 {
     this->halt = state;
 }
