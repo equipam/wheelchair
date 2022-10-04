@@ -11,12 +11,21 @@ int RealPinInterface::doDigitalRead(uint8_t pin)
     return digitalRead(pin);
 }
 
+/// @brief Analog Write
+/// @param pin Pin number
+/// @param val Value between 0 and 3.3 to write
 void RealPinInterface::doAnalogWrite(uint8_t pin, float val)
 {
-    int realVal = static_cast<int>(val / ANALOG_RESOLUTION);
-    analogWrite(pin, val);
+    float finalVal = val;
+    if(val < 0) finalVal = 0;
+    if(val > 3.3) finalVal = 3.3;
+    int realVal = static_cast<int>(finalVal / ANALOG_RESOLUTION);
+    analogWrite(pin, realVal);
 }
 
+/// @brief Analog Read
+/// @param pin Pin number
+/// @return Value between 0 and 3.3 (V)
 float RealPinInterface::doAnalogRead(uint8_t pin)
 {
     return static_cast<float>(analogRead(pin) * ANALOG_RESOLUTION);
