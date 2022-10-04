@@ -32,18 +32,14 @@ void Joystick::calibrate_back(Stream &io)
     return;
 }
 
+/// @brief Map the joystick coordinates to standardized range
+/// @param realCoords
+/// @return Coordinates in standardized range
 LinearCoords Joystick::joystickMapping(LinearCoords realCoords)
 {
-    /// @brief Map the joystick coordinates to standardized range
-    /// @param realCoords
-    /// @return Coordinates in standardized range
-    /* To map
-        [A, B] --> [a, b]
-        use this formula
-        (val - A)*(b-a)/(B-A) + a */
     LinearCoords normalizedCoords;
-    normalizedCoords.x = (realCoords.x - realBounds.minX)*(STANDARDIZED_X_MAX-STANDARDIZED_X_MIN)/(realBounds.maxX-realBounds.minX) + STANDARDIZED_X_MIN;
-    normalizedCoords.y = (realCoords.y - realBounds.minY)*(STANDARDIZED_Y_MAX-STANDARDIZED_Y_MIN)/(realBounds.maxY-realBounds.minY) + STANDARDIZED_Y_MIN;
+    normalizedCoords.x = map(realCoords.x, realBounds.minX, realBounds.maxX, STANDARDIZED_X_MIN, STANDARDIZED_X_MAX);
+    normalizedCoords.y = map(realCoords.y, realBounds.minY, realBounds.maxY, STANDARDIZED_Y_MIN, STANDARDIZED_Y_MAX);
     return normalizedCoords;
 }
 

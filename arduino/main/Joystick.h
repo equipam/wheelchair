@@ -4,6 +4,7 @@
 #include "Coordinates.h"
 #include "PinInterface.h"
 #include <Stream.h>
+#include <Arduino.h>
 
 #define MIN_X 0
 #define MAX_X 3.3
