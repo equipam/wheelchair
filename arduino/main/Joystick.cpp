@@ -38,8 +38,8 @@ void Joystick::calibrate_back(Stream &io)
 LinearCoords Joystick::joystickMapping(LinearCoords realCoords)
 {
     LinearCoords normalizedCoords;
-    normalizedCoords.x = map(realCoords.x, realBounds.minX, realBounds.maxX, STANDARDIZED_X_MIN, STANDARDIZED_X_MAX);
-    normalizedCoords.y = map(realCoords.y, realBounds.minY, realBounds.maxY, STANDARDIZED_Y_MIN, STANDARDIZED_Y_MAX);
+    normalizedCoords.x = Coordinates::map(realCoords.x, realBounds.minX, realBounds.maxX, STANDARDIZED_X_MIN, STANDARDIZED_X_MAX);
+    normalizedCoords.y = Coordinates::map(realCoords.y, realBounds.minY, realBounds.maxY, STANDARDIZED_Y_MIN, STANDARDIZED_Y_MAX);
     return normalizedCoords;
 }
 

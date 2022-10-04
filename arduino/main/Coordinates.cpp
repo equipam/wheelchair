@@ -8,3 +8,7 @@ PolarCoords Coordinates::linearToPolar(LinearCoords coords)
     PolarCoords polarCoords = {.v = 0.0, .omega = 0.0};
     return polarCoords;
 }
+
+float Coordinates::map(float value, float fromLow, float fromHigh, float toLow, float toHigh){
+    return (value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;
+}
