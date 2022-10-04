@@ -47,7 +47,7 @@ LinearCoords Joystick::position()
 {
     LinearCoords pos;
     pos.x = this->pinInterface->doAnalogRead(this->xPin);
-    pos.y = this->pinInterface->doAnalogRead(this->xPin);
+    pos.y = this->pinInterface->doAnalogRead(this->yPin);
     pos = joystickMapping(pos);
     return pos;
 }
