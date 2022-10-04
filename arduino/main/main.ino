@@ -6,12 +6,11 @@
 #include "Chair.h"
 #include "PinInterface.h"
 
-// TODO Decide pin layout
-#define JOYSTICK_X_PIN 0
-#define JOYSTICK_Y_PIN 1
-#define INTERRUPT_PIN 2
-#define CHAIR_V_PIN 3
-#define CHAIR_OMEGA_PIN 4
+#define JOYSTICK_X_PIN 19
+#define JOYSTICK_Y_PIN 20
+#define INTERRUPT_PIN 10
+#define CHAIR_V_PIN 21
+#define CHAIR_OMEGA_PIN 22
 
 RealPinInterface pinInterface;
 Joystick joystick = Joystick(JOYSTICK_X_PIN, JOYSTICK_Y_PIN, &pinInterface);
