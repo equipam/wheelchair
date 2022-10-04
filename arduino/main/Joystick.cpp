@@ -15,6 +15,11 @@ void Joystick::calibrate(Stream &io)
     //  storing the real bounds on the class attribute "realBounds"
 }
 
+
+void Joystick::calibrate_middle(Stream &io)
+{
+    return;
+}
 void Joystick::calibrate_left(Stream &io)
 {
     return;

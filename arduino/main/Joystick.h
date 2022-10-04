@@ -7,9 +7,9 @@
 #include <Arduino.h>
 
 #define MIN_X 0
-#define MAX_X 3.3
+#define MAX_X 5
 #define MIN_Y 0
-#define MAX_X 3.3
+#define MAX_X 5
 
 #define STANDARDIZED_X_MIN -1
 #define STANDARDIZED_X_MAX 1
@@ -34,6 +34,7 @@ public:
     JoystickBounds realBounds;
     Joystick(int xPin, int yPin, PinInterface* pinInterface);
     void calibrate(Stream &io);
+    void calibrate_middle(Stream &io);
     void calibrate_left(Stream &io);
     void calibrate_right(Stream &io);
     void calibrate_front(Stream &io);
