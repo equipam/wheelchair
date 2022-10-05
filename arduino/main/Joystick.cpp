@@ -1,5 +1,6 @@
 #include "Joystick.h"
 
+
 Joystick::Joystick(int xPin, int yPin, PinInterface *pinInterface)
 {
     this->xPin = xPin;
@@ -15,32 +16,36 @@ void Joystick::setup()
     pinMode(this->yPin, INPUT);
 }
 
-void Joystick::calibrate(Stream &io)
+void Joystick::calibrate_middle(Stream &io) 
 {
-    // TODO #10 Create joystick calibration function
-    //  ask the user to place the joystick in forward, back, left and write positions,
-    //  storing the real bounds on the class attribute "realBounds"
-}
 
-
-void Joystick::calibrate_middle(Stream &io)
-{
+    this->realBounds.midX = this->pinInterface->doAnalogRead(this->xPin);
+    this->realBounds.midY = this->pinInterface->doAnalogRead(this->yPin); 
     return;
 }
 void Joystick::calibrate_left(Stream &io)
 {
+    
+    this->realBounds.minX = this->pinInterface->doAnalogRead(this->xPin);
     return;
 }
 void Joystick::calibrate_right(Stream &io)
-{
+{   
+    
+    this->realBounds.maxX = this->pinInterface->doAnalogRead(this->xPin);
     return;
 }
 void Joystick::calibrate_front(Stream &io)
-{
+{   
+    
+    this->realBounds.maxY = this->pinInterface->doAnalogRead(this->yPin);
     return;
 }
+
 void Joystick::calibrate_back(Stream &io)
 {
+    
+    this->realBounds.minY = this->pinInterface->doAnalogRead(this->yPin);
     return;
 }
 

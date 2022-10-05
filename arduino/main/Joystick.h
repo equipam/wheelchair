@@ -10,6 +10,8 @@
 #define MAX_X 5
 #define MIN_Y 0
 #define MAX_X 5
+#define MID_X 0
+#define MID_Y 0
 
 #define STANDARDIZED_X_MIN -1
 #define STANDARDIZED_X_MAX 1
@@ -22,6 +24,8 @@ struct JoystickBounds
     float maxX = MAX_X;
     float minY = MIN_X;
     float maxY = MAX_X;
+    float midX = MID_X;
+    float midY = MID_Y;
 };
 
 class Joystick
