@@ -28,5 +28,5 @@ void RealPinInterface::doAnalogWrite(uint8_t pin, float val)
 /// @return Value between 0 and 3.3 (V)
 float RealPinInterface::doAnalogRead(uint8_t pin)
 {
-    return static_cast<float>(analogRead(pin) * ANALOG_RESOLUTION);
+    return static_cast<float>(analogRead(pin)) * ANALOG_RESOLUTION;
 }
