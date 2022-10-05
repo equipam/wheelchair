@@ -34,14 +34,19 @@ void Chair::setup()
 void Chair::command(PolarCoords coords)
 {
     // Don't send command to chair if halt and coords mean to go "forward"
-    if (this->halt && coords.omega > -30 && coords.omega < 30) return;
+    PolarCoords command = coords;
+    if (this->halt && coords.omega > -30 && coords.omega < 30)
+    {
+        command.v = 0;
+        command.omega = 0;
+    }
 
     // Use this to dance :)
     // this->handleHalt(coords)
 
     // Pass command to chair
-    this->pinInterface->doAnalogWrite(this->vPin, Coordinates::map(coords.v, STANDARDIZED_V_MIN, STANDARDIZED_V_MAX, OUTPUT_V_MIN, OUTPUT_V_MAX));
-    this->pinInterface->doAnalogWrite(this->omegaPin, Coordinates::map(coords.omega, STANDARDIZED_OMEGA_MIN, STANDARDIZED_OMEGA_MAX, OUTPUT_OMEGA_MIN, OUTPUT_OMEGA_MAX));
+    this->pinInterface->doAnalogWrite(this->vPin, Coordinates::map(command.v, STANDARDIZED_V_MIN, STANDARDIZED_V_MAX, OUTPUT_V_MIN, OUTPUT_V_MAX));
+    this->pinInterface->doAnalogWrite(this->omegaPin, Coordinates::map(command.omega, STANDARDIZED_OMEGA_MIN, STANDARDIZED_OMEGA_MAX, OUTPUT_OMEGA_MIN, OUTPUT_OMEGA_MAX));
     return;
 }
 
