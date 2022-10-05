@@ -47,30 +47,29 @@ test(joystick_calibration)
   uint8_t xPin = 0;
   uint8_t yPin = 1;
 
-  MockStream ms;              // fake serial port
   MockPinInterface interface; // fake pin interface
   Joystick joystick = Joystick(xPin, yPin, &interface);
 
   // User places joystick in each position and presses return key
   interface.doAnalogWrite(xPin, 1.5);
   interface.doAnalogWrite(yPin, 1.5);
-  joystick.calibrate_middle(ms);
+  joystick.calibrate_middle();
 
   interface.doAnalogWrite(xPin, 0.1);
   interface.doAnalogWrite(yPin, 1.5);
-  joystick.calibrate_left(ms);
+  joystick.calibrate_left();
 
   interface.doAnalogWrite(xPin, 3);
   interface.doAnalogWrite(yPin, 1.5);
-  joystick.calibrate_right(ms);
+  joystick.calibrate_right();
 
   interface.doAnalogWrite(xPin, 1.5);
   interface.doAnalogWrite(yPin, 3);
-  joystick.calibrate_front(ms);
+  joystick.calibrate_front();
 
   interface.doAnalogWrite(xPin, 1.5);
   interface.doAnalogWrite(yPin, 0.1);
-  joystick.calibrate_back(ms);
+  joystick.calibrate_back();
 
   // The real bound must be saved after calibration
   assertEqual(joystick.realBounds.minX, 0.1);

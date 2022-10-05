@@ -38,12 +38,11 @@ public:
     JoystickBounds realBounds;
     Joystick(int xPin, int yPin, PinInterface* pinInterface);
     void setup();
-    void calibrate(Stream &io);
-    void calibrate_middle(Stream &io);
-    void calibrate_left(Stream &io);
-    void calibrate_right(Stream &io);
-    void calibrate_front(Stream &io);
-    void calibrate_back(Stream &io);
+    void calibrate_middle();
+    void calibrate_left();
+    void calibrate_right();
+    void calibrate_front();
+    void calibrate_back();
     LinearCoords joystickMapping(LinearCoords realCoords);
     LinearCoords position();
 };

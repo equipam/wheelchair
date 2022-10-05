@@ -16,33 +16,31 @@ void Joystick::setup()
     pinMode(this->yPin, INPUT);
 }
 
-void Joystick::calibrate_middle(Stream &io) 
+void Joystick::calibrate_middle()
 {
-
     this->realBounds.midX = this->pinInterface->doAnalogRead(this->xPin);
     this->realBounds.midY = this->pinInterface->doAnalogRead(this->yPin); 
     return;
 }
-void Joystick::calibrate_left(Stream &io)
+void Joystick::calibrate_left()
 {
     
     this->realBounds.minX = this->pinInterface->doAnalogRead(this->xPin);
     return;
 }
-void Joystick::calibrate_right(Stream &io)
+void Joystick::calibrate_right()
 {   
-    
     this->realBounds.maxX = this->pinInterface->doAnalogRead(this->xPin);
     return;
 }
-void Joystick::calibrate_front(Stream &io)
+void Joystick::calibrate_front()
 {   
     
     this->realBounds.maxY = this->pinInterface->doAnalogRead(this->yPin);
     return;
 }
 
-void Joystick::calibrate_back(Stream &io)
+void Joystick::calibrate_back()
 {
     
     this->realBounds.minY = this->pinInterface->doAnalogRead(this->yPin);

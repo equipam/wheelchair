@@ -41,18 +41,21 @@ void setup()
     chair.setup();
 
     // Calibration process
+    Serial.write("Don't touch the joystick. Press any key");
+    Serial.read();
+    joystick.calibrate_middle();
     Serial.write("Place the joystick forward. Press any key");
     Serial.read();
-    joystick.calibrate_front(Serial);
+    joystick.calibrate_front();
     Serial.write("Place the joystick back. Press any key");
     Serial.read();
-    joystick.calibrate_back(Serial);
+    joystick.calibrate_back();
     Serial.write("Place the joystick left. Press any key");
     Serial.read();
-    joystick.calibrate_left(Serial);
+    joystick.calibrate_left();
     Serial.write("Place the joystick right. Press any key");
     Serial.read();
-    joystick.calibrate_right(Serial);
+    joystick.calibrate_right();
 
     // Interrupt Setup
     haltInterrupt.setup(stop, RISING);
