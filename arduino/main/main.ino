@@ -8,19 +8,26 @@
 
 #define JOYSTICK_X_PIN 19
 #define JOYSTICK_Y_PIN 20
-#define INTERRUPT_PIN 10
+#define INTERRUPT_PIN 5
 #define CHAIR_V_PIN 21
 #define CHAIR_OMEGA_PIN 22
 
 RealPinInterface pinInterface;
-Joystick joystick = Joystick(JOYSTICK_X_PIN, JOYSTICK_Y_PIN, &pinInterface);
-// TODO #17 Figure out if it's worth it to implement real arduino interrupt
-// * https://www.arduino.cc/reference/en/language/functions/external-interrupts/attachinterrupt/
-Interrupt interrupt = Interrupt(INTERRUPT_PIN, &pinInterface);
-Chair chair = Chair(CHAIR_V_PIN, CHAIR_OMEGA_PIN, &pinInterface);
+Joystick joystick(JOYSTICK_X_PIN, JOYSTICK_Y_PIN, &pinInterface);
+Interrupt haltInterrupt(INTERRUPT_PIN);
+Interrupt continueInterrupt(INTERRUPT_PIN);
+Chair chair(CHAIR_V_PIN, CHAIR_OMEGA_PIN, &pinInterface);
 
 LinearCoords joystickPosition;
 PolarCoords chairCoordsCommand;
+
+void stop(){
+    chair.setHalt(true);
+}
+
+void proceed(){
+    chair.setHalt(false);
+}
 
 void setup()
 {
@@ -28,12 +35,10 @@ void setup()
     while (!Serial)
     {
     }
-    // Pin setup
-    pinMode(JOYSTICK_X_PIN, INPUT);
-    pinMode(JOYSTICK_Y_PIN, INPUT);
-    pinMode(INTERRUPT_PIN, INPUT);
-    pinMode(CHAIR_V_PIN, OUTPUT);
-    pinMode(CHAIR_OMEGA_PIN, OUTPUT);
+
+    // Pin Setup
+    joystick.setup();
+    chair.setup();
 
     // Calibration process
     Serial.write("Place the joystick forward. Press any key");
@@ -49,6 +54,10 @@ void setup()
     Serial.read();
     joystick.calibrate_right(Serial);
 
+    // Interrupt Setup
+    haltInterrupt.setup(stop, RISING);
+    continueInterrupt.setup(proceed, FALLING);
+
     return;
 }
 
@@ -56,15 +65,5 @@ void loop()
 {
     joystickPosition = joystick.position();
     chairCoordsCommand = Coordinates::linearToPolar(joystickPosition);
-    if (interrupt.mustStop())
-    {
-        joystickPosition = joystick.position();
-        // Wait until user let go of the joystick
-        while (joystickPosition.x != 0 && joystickPosition.y != 0 && interrupt.mustStop())
-        {
-            delay(100);
-            joystickPosition = joystick.position();
-        }
-    }
     chair.command(chairCoordsCommand);
 }

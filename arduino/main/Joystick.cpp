@@ -8,9 +8,13 @@ Joystick::Joystick(int xPin, int yPin, PinInterface *pinInterface)
     this->pinInterface = pinInterface;
     return;
 }
-    // TODO #10 Create joystick calibration function
-    //  ask the user to place the joystick in forward, back, left and write positions,
-    //  storing the real bounds on the class attribute "realBounds"
+
+/// @brief Run this to setup joystick pins
+void Joystick::setup()
+{
+    pinMode(this->xPin, INPUT);
+    pinMode(this->yPin, INPUT);
+}
 
 void Joystick::calibrate_middle(Stream &io) 
 {

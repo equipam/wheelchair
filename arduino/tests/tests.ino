@@ -123,24 +123,24 @@ test(joystick_mapping)
   assertEqual(standardizedPosition.y, expectedY);
 }
 
-test(interrupt)
-{
-  clearPins();
-  int interruptPin = 0;
-  bool mustStop;
-  MockPinInterface interface;
-  Interrupt interrupt = Interrupt(interruptPin, &interface);
+// test(interrupt)
+// {
+//   clearPins();
+//   int interruptPin = 0;
+//   bool mustStop;
+//   MockPinInterface interface;
+//   Interrupt interrupt = Interrupt(interruptPin, &interface);
 
-  // interrupt pin is high, must stop
-  interface.doDigitalWrite(interruptPin, HIGH);
-  mustStop = interrupt.mustStop();
-  assertEqual(mustStop, true);
+//   // interrupt pin is high, must stop
+//   interface.doDigitalWrite(interruptPin, HIGH);
+//   mustStop = interrupt.mustStop();
+//   assertEqual(mustStop, true);
 
-  // interrupt pin is low, must stop
-  interface.doDigitalWrite(interruptPin, LOW);
-  mustStop = interrupt.mustStop();
-  assertEqual(mustStop, false);
-}
+//   // interrupt pin is low, must stop
+//   interface.doDigitalWrite(interruptPin, LOW);
+//   mustStop = interrupt.mustStop();
+//   assertEqual(mustStop, false);
+// }
 
 test(chair)
 {

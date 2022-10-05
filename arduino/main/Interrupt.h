@@ -1,17 +1,16 @@
 #ifndef INTERRUPT_H
 #define INTERRUPT_H
 
-#include "PinInterface.h"
+#include <Arduino.h>
 
 class Interrupt
 {
 private:
-    int interruptPin;
-    PinInterface *pinInterface;
+    uint8_t interruptPin;
 
 public:
-    Interrupt(int interruptPin, PinInterface *pinInterface);
-    bool mustStop();
+    Interrupt(uint8_t interruptPin);
+    void setup(void (*userFunc)(), int mode);
 };
 
 #endif

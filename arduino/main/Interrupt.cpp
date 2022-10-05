@@ -1,16 +1,13 @@
 #include "Interrupt.h"
 
-Interrupt::Interrupt(int interruptPin, PinInterface *pinInterface)
+Interrupt::Interrupt(uint8_t interruptPin)
 {
     this->interruptPin = interruptPin;
-    this->pinInterface = pinInterface;
     return;
 }
 
-bool Interrupt::mustStop()
+void Interrupt::setup(void (*userFunc)(), int mode)
 {
-    if(this->pinInterface->doDigitalRead(this->interruptPin) == 1)
-        return true;
-    else return false;
-    
+    pinMode(interruptPin, INPUT);
+    attachInterrupt(digitalPinToInterrupt(interruptPin), userFunc, mode);
 }
