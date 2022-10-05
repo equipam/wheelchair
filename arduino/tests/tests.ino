@@ -52,24 +52,24 @@ test(joystick_calibration)
   Joystick joystick = Joystick(xPin, yPin, &interface);
 
   // User places joystick in each position and presses return key
-  interface.doAnalogWrite(xPin, 0.1 * ANALOG_RESOLUTION);
-  interface.doAnalogWrite(yPin, 3 / 2 * ANALOG_RESOLUTION);
-  ms.input.print("\n");
+  interface.doAnalogWrite(xPin, 1.5);
+  interface.doAnalogWrite(yPin, 1.5);
+  joystick.calibrate_middle(ms);
+
+  interface.doAnalogWrite(xPin, 0.1);
+  interface.doAnalogWrite(yPin, 1.5);
   joystick.calibrate_left(ms);
 
-  interface.doAnalogWrite(xPin, 3 * ANALOG_RESOLUTION);
-  interface.doAnalogWrite(yPin, 3 / 2 * ANALOG_RESOLUTION);
-  ms.input.print("\n");
+  interface.doAnalogWrite(xPin, 3);
+  interface.doAnalogWrite(yPin, 1.5);
   joystick.calibrate_right(ms);
 
-  interface.doAnalogWrite(xPin, 3 / 2 * ANALOG_RESOLUTION);
-  interface.doAnalogWrite(yPin, 3 * ANALOG_RESOLUTION);
-  ms.input.print("\n");
+  interface.doAnalogWrite(xPin, 1.5);
+  interface.doAnalogWrite(yPin, 3);
   joystick.calibrate_front(ms);
 
-  interface.doAnalogWrite(xPin, 3 / 2 * ANALOG_RESOLUTION);
-  interface.doAnalogWrite(yPin, 0.1 * ANALOG_RESOLUTION);
-  ms.input.print("\n");
+  interface.doAnalogWrite(xPin, 1.5);
+  interface.doAnalogWrite(yPin, 0.1);
   joystick.calibrate_back(ms);
 
   // The real bound must be saved after calibration
