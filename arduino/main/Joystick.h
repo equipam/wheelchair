@@ -18,6 +18,8 @@
 #define STANDARDIZED_Y_MIN -1
 #define STANDARDIZED_Y_MAX 1
 
+#define DEADZONE 0.05
+
 struct JoystickBounds
 {
     float minX = MIN_X;
@@ -39,10 +41,10 @@ public:
     Joystick(int xPin, int yPin, PinInterface* pinInterface);
     void setup();
     void calibrate_middle();
-    void calibrate_left();
-    void calibrate_right();
-    void calibrate_front();
-    void calibrate_back();
+    bool calibrate_left();
+    bool calibrate_right();
+    bool calibrate_front();
+    bool calibrate_back();
     LinearCoords joystickMapping(LinearCoords realCoords);
     LinearCoords position();
 };

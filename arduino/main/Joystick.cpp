@@ -19,31 +19,108 @@ void Joystick::setup()
 void Joystick::calibrate_middle()
 {
     this->realBounds.midX = this->pinInterface->doAnalogRead(this->xPin);
-    this->realBounds.midY = this->pinInterface->doAnalogRead(this->yPin); 
+    this->realBounds.midY = this->pinInterface->doAnalogRead(this->yPin);
+    Serial.print("realBounds.midX=");
+    Serial.println(this->realBounds.midX);
+    Serial.print("realBounds.midY=");
+    Serial.println(this->realBounds.midY);
     return;
 }
-void Joystick::calibrate_left()
+bool Joystick::calibrate_left()
 {
+    float xRead = this->pinInterface->doAnalogRead(this->xPin);
+    float yRead = this->pinInterface->doAnalogRead(this->yPin);
+    float realValue;
+
+    if(xRead > 1.1*this->realBounds.midX || xRead < 0.9*this->realBounds.midX)
+    {
+        realValue = xRead;
+    }
+    else if(yRead > 1.1*this->realBounds.midY || yRead < 0.9*this->realBounds.midY)
+    {
+        realValue = yRead;
+    }
+    else
+    {
+        return false;
+    }
+
+    this->realBounds.minX = realValue;
     
-    this->realBounds.minX = this->pinInterface->doAnalogRead(this->xPin);
-    return;
-}
-void Joystick::calibrate_right()
-{   
-    this->realBounds.maxX = this->pinInterface->doAnalogRead(this->xPin);
-    return;
-}
-void Joystick::calibrate_front()
-{   
-    
-    this->realBounds.maxY = this->pinInterface->doAnalogRead(this->yPin);
+    Serial.print("realBounds.minX=");
+    Serial.println(this->realBounds.minX);
     return;
 }
 
-void Joystick::calibrate_back()
+bool Joystick::calibrate_right()
+{   
+    float xRead = this->pinInterface->doAnalogRead(this->xPin);
+    float yRead = this->pinInterface->doAnalogRead(this->yPin);
+    float realValue;
+
+    if(xRead > 1.1*this->realBounds.midX || xRead < 0.9*this->realBounds.midX)
+    {
+        realValue = xRead;
+    }
+    else if(yRead > 1.1*this->realBounds.midY || yRead < 0.9*this->realBounds.midY)
+    {
+        realValue = yRead;
+    }
+    else
+    {
+        return false;
+    }
+    this->realBounds.maxX = realValue;
+    Serial.print("realBounds.maxX=");
+    Serial.println(this->realBounds.maxX);
+    return;
+}
+
+bool Joystick::calibrate_front()
+{   
+    float xRead = this->pinInterface->doAnalogRead(this->xPin);
+    float yRead = this->pinInterface->doAnalogRead(this->yPin);
+    float realValue;
+
+    if(xRead > 1.1*this->realBounds.midX || xRead < 0.9*this->realBounds.midX)
+    {
+        realValue = xRead;
+    }
+    else if(yRead > 1.1*this->realBounds.midY || yRead < 0.9*this->realBounds.midY)
+    {
+        realValue = yRead;
+    }
+    else
+    {
+        return false;
+    }
+    this->realBounds.maxY = realValue;
+    Serial.print("realBounds.maxY=");
+    Serial.println(this->realBounds.maxY);
+    return;
+}
+
+bool Joystick::calibrate_back()
 {
-    
-    this->realBounds.minY = this->pinInterface->doAnalogRead(this->yPin);
+    float xRead = this->pinInterface->doAnalogRead(this->xPin);
+    float yRead = this->pinInterface->doAnalogRead(this->yPin);
+    float realValue;
+
+    if(xRead > 1.1*this->realBounds.midX || xRead < 0.9*this->realBounds.midX)
+    {
+        realValue = xRead;
+    }
+    else if(yRead > 1.1*this->realBounds.midY || yRead < 0.9*this->realBounds.midY)
+    {
+        realValue = yRead;
+    }
+    else
+    {
+        return false;
+    }
+    this->realBounds.minY = realValue;
+    Serial.print("realBounds.minY=");
+    Serial.println(this->realBounds.minY);
     return;
 }
 
@@ -55,7 +132,7 @@ LinearCoords Joystick::joystickMapping(LinearCoords realCoords)
     LinearCoords normalizedCoords;
     normalizedCoords.x = Coordinates::map(realCoords.x, realBounds.minX, realBounds.maxX, STANDARDIZED_X_MIN, STANDARDIZED_X_MAX);
     normalizedCoords.y = Coordinates::map(realCoords.y, realBounds.minY, realBounds.maxY, STANDARDIZED_Y_MIN, STANDARDIZED_Y_MAX);
-    
+
     normalizedCoords.x = normalizedCoords.x < STANDARDIZED_X_MIN ? STANDARDIZED_X_MIN : normalizedCoords.x;
     normalizedCoords.x = normalizedCoords.x > STANDARDIZED_X_MAX ? STANDARDIZED_X_MAX : normalizedCoords.x;
     normalizedCoords.y = normalizedCoords.y < STANDARDIZED_Y_MIN ? STANDARDIZED_Y_MIN : normalizedCoords.y;
@@ -70,5 +147,7 @@ LinearCoords Joystick::position()
     pos.x = this->pinInterface->doAnalogRead(this->xPin);
     pos.y = this->pinInterface->doAnalogRead(this->yPin);
     pos = joystickMapping(pos);
+    if(abs(pos.x) < DEADZONE) pos.x = 0;
+    if(abs(pos.y) < DEADZONE) pos.y = 0;
     return pos;
 }
