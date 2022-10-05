@@ -22,7 +22,7 @@ private:
     int omegaPin;
     PinInterface *pinInterface;
     bool halt = false;
-    void handleHalt();
+    // void handleHalt(PolarCoords coords);
 public:
     Chair(int vPin, int omegaPin, PinInterface *pinInterface);
     void setup();
