@@ -1,6 +1,8 @@
 #ifndef COORDINATES_H
 #define COORDINATES_H
 
+#include <Arduino.h>
+
 struct LinearCoords
 {
     float x;
