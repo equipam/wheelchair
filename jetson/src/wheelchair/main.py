@@ -1,7 +1,7 @@
 import os
 from typing import Optional
 import typer
-from wheelchair.sslidar_driver import SSLidarDriver
+from wheelchair.driver.sslidar_driver import SSLidarDriver
 from wheelchair.sslidar import SSLidar
 from wheelchair.logger import Logger
 

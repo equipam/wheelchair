@@ -114,7 +114,7 @@ typedef struct
 typedef enum
 {
 	MinOfRunModeType = 0,
-	RUN_IDLE = 0,			/*待机或停止测量*/
+	RUN_IDLE = 0,			/*Standby or stop the measurement*/
 	RUN_SINGLE_SHOT,		/*单次测量*/
 	RUN_CONTINUOUS,			/*连续测量*/
 	NumberOfRunModeType
