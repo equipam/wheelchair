@@ -1,20 +1,6 @@
 #include "Coordinates.h"
-#include <math.h>
 
 // https://en.wikipedia.org/wiki/Polar_coordinate_system
-
-
-
-float atan2(float x, float y)
-{
-    if(x > 0) return atan(y/x);
-    else if(x < 0 && y >= 0) return atan(y/x) + PI;
-    else if(x < 0 && y < 0) return atan(y/x) - PI;
-    else if(x = 0 && y > 0) return HALF_PI;
-    else if(x = 0 && y < 0) return -HALF_PI;
-    // Else, it's not defined...
-    return 0.0;
-}
 
 PolarCoords Coordinates::linearToPolar(LinearCoords coords)
 {
