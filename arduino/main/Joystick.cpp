@@ -20,10 +20,6 @@ void Joystick::calibrate_middle()
 {
     this->realBounds.midX = this->pinInterface->doAnalogRead(this->xPin);
     this->realBounds.midY = this->pinInterface->doAnalogRead(this->yPin);
-    Serial.print("realBounds.midX=");
-    Serial.println(this->realBounds.midX);
-    Serial.print("realBounds.midY=");
-    Serial.println(this->realBounds.midY);
     return;
 }
 bool Joystick::calibrate_left()
@@ -46,9 +42,6 @@ bool Joystick::calibrate_left()
     }
 
     this->realBounds.minX = realValue;
-    
-    Serial.print("realBounds.minX=");
-    Serial.println(this->realBounds.minX);
     return;
 }
 
@@ -71,8 +64,6 @@ bool Joystick::calibrate_right()
         return false;
     }
     this->realBounds.maxX = realValue;
-    Serial.print("realBounds.maxX=");
-    Serial.println(this->realBounds.maxX);
     return;
 }
 
@@ -95,8 +86,6 @@ bool Joystick::calibrate_front()
         return false;
     }
     this->realBounds.maxY = realValue;
-    Serial.print("realBounds.maxY=");
-    Serial.println(this->realBounds.maxY);
     return;
 }
 
@@ -119,8 +108,6 @@ bool Joystick::calibrate_back()
         return false;
     }
     this->realBounds.minY = realValue;
-    Serial.print("realBounds.minY=");
-    Serial.println(this->realBounds.minY);
     return;
 }
 
