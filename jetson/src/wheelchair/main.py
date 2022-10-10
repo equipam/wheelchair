@@ -1,7 +1,7 @@
 import os
 from typing import Optional
 import typer
-from wheelchair.driver.sslidar_driver import SSLidarDriver
+from wheelchair.driver.sslidar_file_api import SSLidarDriver
 from wheelchair.sslidar import SSLidar
 from wheelchair.logger import Logger
 
@@ -38,17 +38,16 @@ def main(
     once: Optional[bool] = False,
     verbose: Optional[bool] = False,
 ):
-    driver = SSLidarDriver()
-    lidar = SSLidar(driver, threshold)
-    arduino = Arduino(stop_pin)
+    with SSLidarDriver() as driver:
+        lidar = SSLidar(driver, threshold)
+        arduino = Arduino(stop_pin)
 
-    if once:
-        check_collision(lidar, arduino, verbose)
-        raise typer.Exit(0)
+        if once:
+            check_collision(lidar, arduino, verbose)
+            raise typer.Exit(0)
 
-    while True:
-        check_collision(lidar, arduino, verbose)
-        pass
+        while True:
+            check_collision(lidar, arduino, verbose)
 
 
 if __name__ == "__main__":
