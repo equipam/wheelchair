@@ -6,6 +6,10 @@ import subprocess
 
 _FOLDER_PATH = pathlib.Path(__file__).parent.resolve()
 
+# * Possible improvements/ alternative solutions:
+# Use socket communication: <https://opensource.com/article/20/3/zeromq-c-python>
+# Use ctypes' C-Python API and call HPS3D_SingleMeasurement directly
+
 class SSLidarDriver:
     def __init__(self) -> None:
         self._cpid = None
