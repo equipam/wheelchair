@@ -10,11 +10,11 @@ struct LinearCoords
     float y;
 };
 
-struct ChairCoords
+/*struct ChairCoords
 {
     float v;
     float omega;
-};
+};*/
 
 class Coordinates
 {
