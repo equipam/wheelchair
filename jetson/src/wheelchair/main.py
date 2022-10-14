@@ -39,15 +39,14 @@ def main(
     verbose: Optional[bool] = False,
 ):
     with SSLidarDriver() as driver:
-        lidar = SSLidar(driver, threshold)
-        arduino = Arduino(stop_pin)
+        with Arduino(stop_pin) as arduino:
+            lidar = SSLidar(driver, threshold)
+            if once:
+                check_collision(lidar, arduino, verbose)
+                raise typer.Exit(0)
 
-        if once:
-            check_collision(lidar, arduino, verbose)
-            raise typer.Exit(0)
-
-        while True:
-            check_collision(lidar, arduino, verbose)
+            while True:
+                check_collision(lidar, arduino, verbose)
 
 
 if __name__ == "__main__":
