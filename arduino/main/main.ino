@@ -8,25 +8,21 @@
 
 #define JOYSTICK_X_PIN 19
 #define JOYSTICK_Y_PIN 20
-#define INTERRUPT_PIN 5
+#define INTERRUPT_PIN 2
+#define INTERRUPT_READ_PIN 3
 #define CHAIR_V_PIN 21
 #define CHAIR_OMEGA_PIN 22
 
 RealPinInterface pinInterface;
 Joystick joystick(JOYSTICK_X_PIN, JOYSTICK_Y_PIN, &pinInterface);
 Interrupt haltInterrupt(INTERRUPT_PIN);
-Interrupt continueInterrupt(INTERRUPT_PIN);
 Chair chair(CHAIR_V_PIN, CHAIR_OMEGA_PIN, &pinInterface);
 
 LinearCoords joystickPosition;
 PolarCoords chairCoordsCommand;
 
-void stop(){
-    chair.setHalt(true);
-}
-
-void proceed(){
-    chair.setHalt(false);
+void interruptFcn(){
+    chair.setHalt(pinInterface.doDigitalRead(INTERRUPT_READ_PIN));
 }
 
 void setup()
@@ -58,8 +54,8 @@ void setup()
     joystick.calibrate_right();
 
     // Interrupt Setup
-    haltInterrupt.setup(stop, RISING);
-    continueInterrupt.setup(proceed, FALLING);
+    pinMode(INTERRUPT_READ_PIN, INPUT);
+    haltInterrupt.setup(interruptFcn, CHANGE);
 
     return;
 }
