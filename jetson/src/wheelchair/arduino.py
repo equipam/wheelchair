@@ -22,17 +22,12 @@ class Arduino:
 
     def set_stop_signal(self, state: bool):        
         # interface with pin
-        if state == True:
-            try:
-                GPIO.output(self._output_pin, GPIO.HIGH)
-                self.state = True
-            except Exception:
-                self.cleanup()
-                self.setup()
-        else:
-            try:
-                GPIO.output(self._output_pin, GPIO.LOW)
-                self.state = False
-            except Exception:
-                self.cleanup()
-                self.setup()
+        if state == self.state:
+            return
+
+        try:
+            GPIO.output(self._output_pin, GPIO.HIGH if state else GPIO.LOW)
+            self.state = state
+        except Exception:
+            self.cleanup()
+            self.setup()
