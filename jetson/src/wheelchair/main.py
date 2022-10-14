@@ -1,4 +1,5 @@
 import os
+import traceback
 from typing import Optional
 import typer
 from wheelchair.driver.sslidar_file_api import SSLidarDriver
@@ -46,7 +47,11 @@ def main(
                 raise typer.Exit(0)
 
             while True:
-                check_collision(lidar, arduino, verbose)
+                try:
+                    check_collision(lidar, arduino, verbose)
+                except Exception:
+                    logger.critical(traceback.format_exc())
+                    break
 
 
 if __name__ == "__main__":
