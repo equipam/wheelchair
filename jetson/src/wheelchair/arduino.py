@@ -17,6 +17,7 @@ class Arduino:
         self.setup()
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
+        print("GPIO Cleanup")
         del exc_type, exc_value, exc_traceback
         self.cleanup()
 
