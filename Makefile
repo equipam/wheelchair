@@ -20,7 +20,7 @@ dev-setup: deps sym-links
 
 # --- Jetson Nano Setup
 
-JETSON_USER := user_name # TODO know what username we have in the jetson linux
+JETSON_USER := iw20
 
 jetson-gpio:
 	sudo groupadd -f -r gpio
