@@ -23,7 +23,7 @@ uint8_t connect_number = 0;
  * */
 void* userFunction(HPS3D_HandleTypeDef *handle,AsyncIObserver_t *event)
 {
-    uint16_t distance_min = 0;
+    uint16_t distance_min = -1;
     FILE *f;
 	f = fopen("data.txt","w");
     if(f == NULL)
