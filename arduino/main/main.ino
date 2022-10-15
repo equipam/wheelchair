@@ -63,6 +63,6 @@ void setup()
 void loop()
 {
     joystickPosition = joystick.position();
-    chairCoordsCommand = Coordinates::linearToPolar(joystickPosition);
-    chair.command(chairCoordsCommand);
+    //chairCoordsCommand = Coordinates::linearToPolar(joystickPosition);
+    chair.command(joystickPosition);
 }
