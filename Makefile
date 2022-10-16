@@ -33,7 +33,7 @@ jetson-deps:
 jetson-build:
 	cd jetson/lib && make
 
-jetson-setup: jetson-deps jetson-gpio
+jetson-setup: jetson-deps
 	
 # ---
 
