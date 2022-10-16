@@ -43,58 +43,30 @@ static bool handleDataReceive(HPS3D_EventType_t type, HPS3D_MeasureData_t data)
 	{
 	case HPS3D_SIMPLE_ROI_EVEN: // Simple ROI data packets do not contain the depth of each point
 		//printf("*************  HPS3D_SIMPLE_ROI_EVEN  ********************\n");
-		num = data.simple_roi_data[0].roi_num;
-		int i = 0;
-		for (i = 0; i < num; i++)
 		{
-			/*printf("  ********GroupID:%d  ROIID:%d  *******\n", data.simple_roi_data[i].group_id, data.simple_roi_data[i].roi_id);
-			printf("    distance_average:%d\n", data.simple_roi_data[i].distance_average);
-			printf("    distance_min    :%d\n", data.simple_roi_data[i].distance_min);
-			printf("    saturation_count:%d\n", data.simple_roi_data[i].saturation_count);
-			printf("    threshold_state :%d\n", data.simple_roi_data[i].threshold_state);
-			printf("    =====================================\n\n");*/
-
-			// Average minimum distance
-			distanceMin += data.simple_roi_data[i].distance_min * 1/num;
+			num = data.simple_roi_data[0].roi_num;
+			int i = 0;
+			for (i = 0; i < num; i++)
+			{
+				distanceMin += data.simple_roi_data[i].distance_min * 1/num;
+			}
+			break;
 		}
-		break;
 	case HPS3D_FULL_ROI_EVEN: // Complete ROI packets
 		//printf("*************  HPS3D_FULL_ROI_EVEN  ********************\n");
-		num = data.full_roi_data[0].roi_num;
-		for (i = 0; i < num; i++)
 		{
-			/*printf("  ********GroupID:%d  ROIID:%d  *******\n", data.full_roi_data[i].group_id, data.full_roi_data[i].roi_id);
-			printf("    ROI Left Top    :(%d,%d)\n", data.full_roi_data[i].left_top_x, data.full_roi_data[i].left_top_y);
-			printf("    ROI Right Bottom:(%d,%d)\n", data.full_roi_data[i].right_bottom_x, data.full_roi_data[i].right_bottom_y);
-			printf("    ROI Pixel Number:%d\n", data.full_roi_data[i].pixel_number);
-			printf("    distance_average:%d\n", data.full_roi_data[i].distance_average);
-			printf("    distance_min    :%d\n", data.full_roi_data[i].distance_min);
-			printf("    saturation_count:%d\n", data.full_roi_data[i].saturation_count);
-			printf("    threshold_state :%d\n", data.full_roi_data[i].threshold_state);
-			printf("    =====================================\n\n");*/
-			distanceMin += data.full_roi_data[i].distance_min * 1/num;
+			num = data.full_roi_data[0].roi_num;
+			for (i = 0; i < num; i++)
+			{
+				distanceMin += data.full_roi_data[i].distance_min * 1/num;
+			}
+			break;
 		}
-		break;
-	case HPS3D_SIMPLE_DEPTH_EVEN: // Simple deep packet, do not contain each point distance and point cloud data
-		/*printf("*************  HPS3D_SIMPLE_DEPTH_EVEN  ********************\n");
-		printf(" distance_average:%d\n", data.simple_depth_data.distance_average);
-		printf(" distance_min    :%d\n", data.simple_depth_data.distance_min);
-		printf(" saturation_count:%d\n", data.simple_depth_data.saturation_count);
-		printf("==========================================================\n\n");*/
+	case HPS3D_SIMPLE_DEPTH_EVEN:
 		distanceMin = data.simple_depth_data.distance_min;
 		break;
 	case HPS3D_FULL_DEPTH_EVEN: // Full depth map data packets, containing the point cloud data
 		distanceMin = data.full_depth_data.distance_min;
-		/*printf("*************  HPS3D_FULL_DEPTH_EVEN    ********************\n");
-		printf("distance_average:%d\n", data.full_depth_data.distance_average);
-		printf("distance_min    :%d\n", data.full_depth_data.distance_min);
-		printf("saturation_count:%d\n", data.full_depth_data.saturation_count);
-
-		printf("distance[1]     :%d\n", data.full_depth_data.distance[1]);
-		printf("pointCloud[1]   :(%f,%f.%f)\n", data.full_depth_data.point_cloud_data.point_data[1].x,
-			data.full_depth_data.point_cloud_data.point_data[1].y, data.full_depth_data.point_cloud_data.point_data[1].z);
-
-		printf("==========================================================\n\n");*/
 		break;
 	default:
 		break;
