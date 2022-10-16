@@ -113,8 +113,14 @@ static void eventCallbackFunction(int handle, int eventType, uint8_t *data, int 
 	{
 	// Measurement data notification events
 	case HPS3D_SIMPLE_ROI_EVEN:
+		print("HPS3D_SIMPLE_ROI_EVEN\n");
+		break;
 	case HPS3D_FULL_ROI_EVEN:
+		print("HPS3D_FULL_ROI_EVEN\n");
+		break;
 	case HPS3D_FULL_DEPTH_EVEN:
+		print("HPS3D_FULL_DEPTH_EVEN\n");
+		break;
 	case HPS3D_SIMPLE_DEPTH_EVEN:
 		printf("handle:%d!\n", handle);
 		HPS3D_ConvertToMeasureData(data, &gMeasureData, (HPS3D_EventType_t)eventType);
@@ -131,7 +137,10 @@ static void eventCallbackFunction(int handle, int eventType, uint8_t *data, int 
 		}
 		break;
 	case HPS3D_NULL_EVEN:
+		print("HPS3D_NULL_EVEN\n");
+		break;
 	default:
+		print("Not known event\n");
 		break;
 	}
 }
