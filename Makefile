@@ -22,14 +22,16 @@ dev-setup: deps sym-links
 
 JETSON_USER := iw20
 
-jetson-gpio:
-	sudo groupadd -f -r gpio
-	sudo usermod -a -G gpio $(JETSON_USER)
-	sudo cp jetson/99-gpio.rules /etc/udev/rules.d/
-	sudo udevadm control --reload-rules && sudo udevadm trigger
-
 jetson-deps:
-	cd jetson && python -m pip install -r requirements.txt
+	git clone https://github.com/pjueon/JetsonGPIO
+	cd JetsonGPIO && \
+	mkdir build && cd build && \
+	cmake .. -DBUILD_EXAMPLES=OFF && \
+	sudo make install
+	rm -rf JetsonGPIO/*
+
+jetson-build:
+	cd jetson/lib && make
 
 jetson-setup: jetson-deps jetson-gpio
 	
