@@ -12,7 +12,9 @@ SOURCES = $(wildcard *.c *.cpp)
 OBJS = $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCES)))
 
 $(TARGET):$(OBJS)
-	$(GG) $(OBJS) -o $(TARGET) -Wl,-rpath=./ -L./ -lHPS3DSDK_aarch64_1-8-5 -lJetsonGPIO -lpthread
+# 	$(GG) $(OBJS) -o $(TARGET) -Wl,-rpath=./ -L./ -lHPS3DSDK -lJetsonGPIO
+# 	-lpthread
+	$(GG) $(OBJS) -o $(TARGET) -Wl,-rpath=./ -L./ -lHPS3DSDK
 	chmod a+x $(TARGET)
 
 clean:

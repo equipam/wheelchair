@@ -38,7 +38,7 @@ static bool handleDataReceive(HPS3D_EventType_t type, HPS3D_MeasureData_t data)
 {
 	int num = 0;
 	int i = 0;
-	float distanceMin = 0;
+	uint16_t distanceMin = 0;
 	switch (type)
 	{
 	case HPS3D_SIMPLE_ROI_EVEN: // Simple ROI data packets do not contain the depth of each point
@@ -72,6 +72,8 @@ static bool handleDataReceive(HPS3D_EventType_t type, HPS3D_MeasureData_t data)
 		break;
 	}
 
+	printf("min distance: %d\n", distanceMin);
+
 	handleInterrupt(distanceMin);
 
 	return true;
@@ -85,13 +87,13 @@ static void eventCallbackFunction(int handle, int eventType, uint8_t *data, int 
 	{
 	// Measurement data notification events
 	case HPS3D_SIMPLE_ROI_EVEN:
-		printf("HPS3D_SIMPLE_ROI_EVEN\n");
+		// printf("HPS3D_SIMPLE_ROI_EVEN\n");
 		break;
 	case HPS3D_FULL_ROI_EVEN:
-		printf("HPS3D_FULL_ROI_EVEN\n");
+		// printf("HPS3D_FULL_ROI_EVEN\n");
 		break;
 	case HPS3D_FULL_DEPTH_EVEN:
-		printf("HPS3D_FULL_DEPTH_EVEN\n");
+		// printf("HPS3D_FULL_DEPTH_EVEN\n");
 		break;
 	case HPS3D_SIMPLE_DEPTH_EVEN:
 		printf("handle:%d!\n", handle);
@@ -145,14 +147,14 @@ int main()
 	do
 	{
 		// Initializes the memory
-		ret = HPS3D_MeasureDataInit(&gMeasureData);
+		ret = HPS3D_MeasureDataInit(&gMeasureData);´
 		if (ret != HPS3D_RET_OK)
 		{
 			printf("MeasureDataInit failed, Err:%d\n", ret);
 			break;
 		}
 
-		ret = HPS3D_USBConnectDevice((char *)DEVICE_BIND, &handle);
+		ret = HPS3D_USBConnectDevice((char *) DEVICE_BIND, &handle);
 
 		if (ret != HPS3D_RET_OK)
 		{
