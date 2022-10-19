@@ -14,7 +14,7 @@
 #include "HPS3DUser_IF.h"
 
 #define DEVICE_BIND "/dev/ttyACM0"
-#define INTERRUPT_PIN 1 // TODO figure out the pin
+#define INTERRUPT_PIN 11 // TODO figure out the pin
 #define COLLISION_DISTANCE_THRESHOLD 1 // TODO figure out the units
 
 int gHandle = -1;
