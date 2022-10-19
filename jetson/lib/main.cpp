@@ -147,7 +147,7 @@ int main()
 	do
 	{
 		// Initializes the memory
-		ret = HPS3D_MeasureDataInit(&gMeasureData);´
+		ret = HPS3D_MeasureDataInit(&gMeasureData);
 		if (ret != HPS3D_RET_OK)
 		{
 			printf("MeasureDataInit failed, Err:%d\n", ret);
