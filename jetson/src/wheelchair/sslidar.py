@@ -1,4 +1,4 @@
-from wheelchair.sslidar_driver import SSLidarDriver
+from wheelchair.driver.sslidar_file_api import SSLidarDriver
 
 class SSLidar:
     def __init__(self, driver: SSLidarDriver, threshold: float) -> None:
