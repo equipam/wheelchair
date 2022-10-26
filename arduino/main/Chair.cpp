@@ -33,14 +33,14 @@ void Chair::setup()
 /// @param coords Normalized polar coordinates
 void Chair::command(LinearCoords coords)
 {
-    /*
+    
     // Don't send command to chair if halt and coords mean to go "forward"
-    PolarCoords command = coords;
-    if (this->halt && coords.omega > -30 && coords.omega < 30)
+    LinearCoords command = coords;
+    if (this->halt && coords.x > -30 && coords.y < 30)
     {
-        command.v = 0;
-        command.omega = 0;
-    }*/
+        command.x = 0;
+        command.y = 0;
+    }
 
     // Use this to dance :)
     // this->handleHalt(coords)

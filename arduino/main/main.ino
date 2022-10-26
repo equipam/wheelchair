@@ -6,12 +6,12 @@
 #include "Chair.h"
 #include "PinInterface.h"
 
-#define JOYSTICK_X_PIN 19
-#define JOYSTICK_Y_PIN 20
+#define JOYSTICK_X_PIN A1
+#define JOYSTICK_Y_PIN A2
 #define INTERRUPT_PIN 2
 #define INTERRUPT_READ_PIN 3
-#define CHAIR_V_PIN 21
-#define CHAIR_OMEGA_PIN 22
+#define CHAIR_V_PIN A3
+#define CHAIR_OMEGA_PIN A4
 
 RealPinInterface pinInterface;
 Joystick joystick(JOYSTICK_X_PIN, JOYSTICK_Y_PIN, &pinInterface);
@@ -19,7 +19,6 @@ Interrupt haltInterrupt(INTERRUPT_PIN);
 Chair chair(CHAIR_V_PIN, CHAIR_OMEGA_PIN, &pinInterface);
 
 LinearCoords joystickPosition;
-PolarCoords chairCoordsCommand;
 
 void interruptFcn(){
     chair.setHalt(pinInterface.doDigitalRead(INTERRUPT_READ_PIN));
@@ -63,6 +62,9 @@ void setup()
 void loop()
 {
     joystickPosition = joystick.position();
-    //chairCoordsCommand = Coordinates::linearToPolar(joystickPosition);
+    Serial.print("x = ");
+    Serial.print(joystickPosition.x);
+    Serial.print(" | y = ");
+    Serial.println(joystickPosition.y);
     chair.command(joystickPosition);
 }
