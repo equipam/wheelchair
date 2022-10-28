@@ -28,7 +28,7 @@ jetson-deps:
 	mkdir build && cd build && \
 	cmake .. -DBUILD_EXAMPLES=OFF && \
 	sudo make install
-	rm -rf JetsonGPIO/*
+	rm -rf JetsonGPIO
 
 jetson-build:
 	cd jetson/lib && make

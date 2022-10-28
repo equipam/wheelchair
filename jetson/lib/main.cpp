@@ -15,10 +15,11 @@
 
 #define DEVICE_BIND "/dev/ttyACM0"
 #define INTERRUPT_PIN 11 // TODO figure out the pin
-#define COLLISION_DISTANCE_THRESHOLD 1 // TODO figure out the units
+#define COLLISION_DISTANCE_THRESHOLD 500 // TODO figure out the units
 
-int gHandle = -1;
-static HPS3D_MeasureData_t gMeasureData;
+int g_handle = -1;
+int m_handle[8] = {-1};
+static HPS3D_MeasureData_t g_measureData;
 
 static bool collisionDetected = false;
 
@@ -26,6 +27,7 @@ void handleInterrupt(uint16_t distanceMin)
 {
 	if (distanceMin < COLLISION_DISTANCE_THRESHOLD && !collisionDetected)
 	{
+		printf("Collision detected!\n");
 		GPIO::output(INTERRUPT_PIN, GPIO::HIGH);
 		collisionDetected = true;
 		return;
@@ -34,95 +36,137 @@ void handleInterrupt(uint16_t distanceMin)
 	collisionDetected = false;
 }
 
-static bool handleDataReceive(HPS3D_EventType_t type, HPS3D_MeasureData_t data)
+static bool PrintResultData(HPS3D_EventType_t type, HPS3D_MeasureData_t data)
 {
 	int num = 0;
 	int i = 0;
-	uint16_t distanceMin = 0;
 	switch (type)
 	{
-	case HPS3D_SIMPLE_ROI_EVEN: // Simple ROI data packets do not contain the depth of each point
-		//printf("*************  HPS3D_SIMPLE_ROI_EVEN  ********************\n");
+	case HPS3D_SIMPLE_ROI_EVEN: //简单ROI数据包  不含每个点的深度数据
 		{
+			printf("*************  HPS3D_SIMPLE_ROI_EVEN  ********************\n");
 			num = data.simple_roi_data[0].roi_num;
 			int i = 0;
 			for (i = 0; i < num; i++)
 			{
-				distanceMin += data.simple_roi_data[i].distance_min * 1/num;
+				printf("  ********GroupID:%d  ROIID:%d  *******\n", data.simple_roi_data[i].group_id, data.simple_roi_data[i].roi_id);
+				printf("    distance_average:%d\n", data.simple_roi_data[i].distance_average);
+				printf("    distance_min    :%d\n", data.simple_roi_data[i].distance_min);
+				printf("    saturation_count:%d\n", data.simple_roi_data[i].saturation_count);
+				printf("    threshold_state :%d\n", data.simple_roi_data[i].threshold_state);
+				printf("    =====================================\n\n");
 			}
+			handleInterrupt(data.simple_roi_data[i].distance_min);
 			break;
 		}
-	case HPS3D_FULL_ROI_EVEN: // Complete ROI packets
-		//printf("*************  HPS3D_FULL_ROI_EVEN  ********************\n");
+	case HPS3D_FULL_ROI_EVEN: //完整ROI数据包
 		{
+			printf("*************  HPS3D_FULL_ROI_EVEN  ********************\n");
 			num = data.full_roi_data[0].roi_num;
 			for (i = 0; i < num; i++)
 			{
-				distanceMin += data.full_roi_data[i].distance_min * 1/num;
+				printf("  ********GroupID:%d  ROIID:%d  *******\n", data.full_roi_data[i].group_id, data.full_roi_data[i].roi_id);
+				printf("    ROI Left Top    :(%d,%d)\n", data.full_roi_data[i].left_top_x, data.full_roi_data[i].left_top_y);
+				printf("    ROI Right Bottom:(%d,%d)\n", data.full_roi_data[i].right_bottom_x, data.full_roi_data[i].right_bottom_y);
+				printf("    ROI Pixel Number:%d\n", data.full_roi_data[i].pixel_number);
+				printf("    distance_average:%d\n", data.full_roi_data[i].distance_average);
+				printf("    distance_min    :%d\n", data.full_roi_data[i].distance_min);
+				printf("    saturation_count:%d\n", data.full_roi_data[i].saturation_count);
+				printf("    threshold_state :%d\n", data.full_roi_data[i].threshold_state);
+				printf("    =====================================\n\n");
 			}
+			handleInterrupt(data.full_roi_data[i].distance_min);
 			break;
 		}
-	case HPS3D_SIMPLE_DEPTH_EVEN:
-		distanceMin = data.simple_depth_data.distance_min;
-		break;
-	case HPS3D_FULL_DEPTH_EVEN: // Full depth map data packets, containing the point cloud data
-		distanceMin = data.full_depth_data.distance_min;
-		break;
+	case HPS3D_SIMPLE_DEPTH_EVEN: //简单深度数据包，不含每个点距离及点云数据
+		{		
+			printf("*************  HPS3D_SIMPLE_DEPTH_EVEN  ********************\n");
+			printf(" distance_average:%d\n", data.simple_depth_data.distance_average);
+			printf(" distance_min    :%d\n", data.simple_depth_data.distance_min);
+			printf(" saturation_count:%d\n", data.simple_depth_data.saturation_count);
+			printf("==========================================================\n\n");
+			handleInterrupt(data.simple_depth_data.distance_min);
+			break;
+		}
+	case HPS3D_FULL_DEPTH_EVEN: //完整深度图数据包，含点云数据
+		{
+			printf("*************  HPS3D_FULL_DEPTH_EVEN    ********************\n");
+			printf("distance_average:%d\n", data.full_depth_data.distance_average);
+			printf("distance_min    :%d\n", data.full_depth_data.distance_min);
+			printf("saturation_count:%d\n", data.full_depth_data.saturation_count);
+
+
+			/*for (size_t i = 0; i < data.full_depth_data.point_cloud_data.points; i++)
+			{
+				printf("distance[%d]     :%d\n", i, data.full_depth_data.distance[i]);
+				printf("pointCloud[%d]   :(%f,%f.%f)\n", i, data.full_depth_data.point_cloud_data.point_data[i].x,
+				data.full_depth_data.point_cloud_data.point_data[i].y, data.full_depth_data.point_cloud_data.point_data[i].z);
+			}*/
+			
+			printf("distance[0]     :%d\n", data.full_depth_data.distance[0]);
+			printf("pointCloud[0]   :(%f,%f.%f)\n", data.full_depth_data.point_cloud_data.point_data[0].x,
+				data.full_depth_data.point_cloud_data.point_data[0].y, data.full_depth_data.point_cloud_data.point_data[0].z);
+
+			printf("distance[1]     :%d\n", data.full_depth_data.distance[1]);
+			printf("pointCloud[1]   :(%f,%f.%f)\n", data.full_depth_data.point_cloud_data.point_data[1].x,
+				data.full_depth_data.point_cloud_data.point_data[1].y, data.full_depth_data.point_cloud_data.point_data[1].z);
+			printf("Point amount: %d\n", data.full_depth_data.point_cloud_data.points);
+			
+			handleInterrupt(data.full_depth_data.distance_min);
+			printf("==========================================================\n\n");
+			break;
+		}
 	default:
+		printf("hellohellohello\n");
 		break;
 	}
-
-	printf("min distance: %d\n", distanceMin);
-
-	handleInterrupt(distanceMin);
 
 	return true;
 }
 
 static bool isReconnectEnable = true;
 static bool isReconnect = false;
-static void eventCallbackFunction(int handle, int eventType, uint8_t *data, int dataLen, void *userPara)
+static void EventCallBackFunc(int handle, int eventType, uint8_t *data,int dataLen, void *userPara)
 {
 	switch ((HPS3D_EventType_t)eventType)
 	{
-	// Measurement data notification events
-	case HPS3D_SIMPLE_ROI_EVEN:
-		// printf("HPS3D_SIMPLE_ROI_EVEN\n");
-		break;
-	case HPS3D_FULL_ROI_EVEN:
-		// printf("HPS3D_FULL_ROI_EVEN\n");
-		break;
-	case HPS3D_FULL_DEPTH_EVEN:
-		// printf("HPS3D_FULL_DEPTH_EVEN\n");
-		break;
-	case HPS3D_SIMPLE_DEPTH_EVEN:
-		printf("handle:%d!\n", handle);
-		HPS3D_ConvertToMeasureData(data, &gMeasureData, (HPS3D_EventType_t)eventType);
-		handleDataReceive((HPS3D_EventType_t)eventType, gMeasureData);
-		break;
-	case HPS3D_SYS_EXCEPTION_EVEN:
-		printf("SYS ERR :%s\n", data);
-		break;
-	case HPS3D_DISCONNECT_EVEN:
-		printf("Device disconnected!\n");
-		if (isReconnectEnable && isReconnect == false)
-		{
-			isReconnect = true;
-		}
-		break;
-	case HPS3D_NULL_EVEN:
-		printf("HPS3D_NULL_EVEN\n");
-		break;
-	default:
-		printf("Not known event\n");
-		break;
+		//测量数据通知事件
+		case HPS3D_SIMPLE_ROI_EVEN:	
+			//printf("hello\n");
+		case HPS3D_FULL_ROI_EVEN:	
+			//printf("hello\n");
+		case HPS3D_FULL_DEPTH_EVEN:	
+			//printf("hello\n");
+		case HPS3D_SIMPLE_DEPTH_EVEN:
+			//printf("handle:%d!\n", handle);
+			HPS3D_ConvertToMeasureData(data,&g_measureData, (HPS3D_EventType_t)eventType);
+			PrintResultData((HPS3D_EventType_t)eventType, g_measureData);
+			break;
+		case HPS3D_SYS_EXCEPTION_EVEN: /*系统异常通知事件*/
+			//printf("SYS ERR :%s\n", data);
+
+			break;
+		case HPS3D_DISCONNECT_EVEN: /*连接异常断开通知事件*/
+			printf("Device disconnected!\n");
+			//sleep(10);
+			//HPS3D_StopCapture(handle);
+			//sleep(10);
+			if(isReconnectEnable && isReconnect == false)
+			{
+				isReconnect = true;
+			}
+			break;
+		case HPS3D_NULL_EVEN:  //空事件通知
+		default:
+			//printf("hello\n");
+			break;	
 	}
 }
 
-void signalHandler(int signo)
+void signal_handler(int signo)
 {
-	HPS3D_StopCapture(gHandle);
-	HPS3D_CloseDevice(gHandle);
+	HPS3D_StopCapture(g_handle);
+	HPS3D_CloseDevice(g_handle);
 	printf("Device disconnected!\n\n");
 	GPIO::cleanup(INTERRUPT_PIN);
 	exit(0);
@@ -135,81 +179,91 @@ void gpioSetup()
 	GPIO::setup(INTERRUPT_PIN, GPIO::OUT, GPIO::LOW);
 }
 
-
 int main()
 {
 	gpioSetup();
+	printf("HPS3D160 C/C++ Demo (Visual Statudio 2017)\n\n");
 
 	printf("SDK Ver:%s\n", HPS3D_GetSDKVersion());
-	
+
 	int handle = -1;
 	HPS3D_StatusTypeDef ret = HPS3D_RET_OK;
 	do
 	{
-		// Initializes the memory
-		ret = HPS3D_MeasureDataInit(&gMeasureData);
+		//初始化内存
+		ret = HPS3D_MeasureDataInit(&g_measureData);
 		if (ret != HPS3D_RET_OK)
 		{
-			printf("MeasureDataInit failed, Err:%d\n", ret);
+			printf("MeasureDataInit failed,Err:%d\n", ret);
 			break;
 		}
 
-		ret = HPS3D_USBConnectDevice((char *) DEVICE_BIND, &handle);
+		ret = HPS3D_USBConnectDevice(DEVICE_BIND, &handle);
 
 		if (ret != HPS3D_RET_OK)
 		{
-			printf("Equipment connection failed, Err:%d\n", ret);
+			printf("设备连接失败,Err:%d\n", ret);
 			break;
 		}
-		printf("Equipment version for:%s\n", HPS3D_GetDeviceVersion(handle));
-		printf("Equipment serial number:%s\n\n", HPS3D_GetSerialNumber(handle));
+		printf("设备版本为:%s\n", HPS3D_GetDeviceVersion(0));
+		printf("设备序列号:%s\n\n", HPS3D_GetSerialNumber(0));
+		if (handle == 1)
+		{
+			printf("设备版本为:%s\n", HPS3D_GetDeviceVersion(1));
+			printf("设备序列号:%s\n\n", HPS3D_GetSerialNumber(1));
+		}
 
-		gHandle = handle;
-
-		// Register event callback function, used to receive continuous return packets, and invoke exception, etc;
-		ret = HPS3D_RegisterEventCallback(eventCallbackFunction, NULL);
+		//注册事件回调函数，用于接收连续返回数据包，及调用异常等;
+		ret= HPS3D_RegisterEventCallback(EventCallBackFunc, NULL);
 		if (ret != HPS3D_RET_OK)
 		{
-			printf("Register callback function failure,Err:%d\n", ret);
+			printf("注册回调函数失败,Err:%d\n", ret);
 			break;
+
 		}
 
 		HPS3D_DeviceSettings_t settings;
 		ret = HPS3D_ExportSettings(handle, &settings);
 		if (ret != HPS3D_RET_OK)
 		{
-			printf("Export equipment failure parameters,Err:%d\n", ret);
+			printf("导出设备参数失败,Err:%d\n", ret);
 			break;
 		}
-		printf("A resolution of:%d X %d\n", settings.max_resolution_X, settings.max_resolution_Y);
-		printf("Support for maximum ROI group number:%d  The current ROI group：%d\n", settings.max_roi_group_number, settings.cur_group_id);
-		printf("Support for maximum ROI quantity:%d\n", settings.max_roi_number);
-		printf("Most support the machine number:%d，The current equipment more machine number:%d\n", settings.max_multiCamera_code, settings.cur_multiCamera_code);
-		printf("The current user ID for the equipment：%d\n", settings.user_id);
-		printf("Optical path compensation is open: %d\n\n", settings.optical_path_calibration);
+		printf("分辨率为:%d X %d\n", settings.max_resolution_X, settings.max_resolution_Y);
+		printf("支持最大ROI分组数量为:%d  当前ROI分组：%d\n", settings.max_roi_group_number, settings.cur_group_id);
+		printf("支持最大ROI数量为:%d\n", settings.max_roi_number);
+		printf("支持最大多机编号为:%d，当前设备多机编号:%d\n", settings.max_multiCamera_code, settings.cur_multiCamera_code);
+		printf("当前设备用户ID为：%d\n", settings.user_id);
+		printf("光路补偿是否开启: %d\n\n", settings.optical_path_calibration);
 
+		bool isContinuous = false;
+		int count = 0;
 		HPS3D_StartCapture(handle);
 		do
 		{
 			if (isReconnect)
 			{
-				ret = HPS3D_USBConnectDevice((char *)DEVICE_BIND, &handle);
+				//sleep(5);
+				ret = (HPS3D_StatusTypeDef)HPS3D_EthternetReconnection(handle);
 				if (ret == HPS3D_RET_OK)
 				{
 					HPS3D_StartCapture(handle);
-					printf("Reconnection successful: equipment %d\n", handle);
+					printf("重连成功:设备 %d\n", handle);
 					isReconnect = false;
 				}
 			}
 			sleep(1);
-
+						
 		} while (1);
+
 
 	} while (0);
 
 	HPS3D_StopCapture(handle);
 	HPS3D_CloseDevice(handle);
-	HPS3D_MeasureDataFree(&gMeasureData);
+	HPS3D_MeasureDataFree(&g_measureData);
 	GPIO::cleanup(INTERRUPT_PIN);
 	system("pause");
 }
+
+
