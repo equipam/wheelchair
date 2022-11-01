@@ -45,9 +45,12 @@ void Chair::command(LinearCoords coords)
     // Use this to dance :)
     // this->handleHalt(coords)
 
+    float mappedX = Coordinates::map(coords.x, STANDARDIZED_V_MIN, STANDARDIZED_V_MAX, OUTPUT_V_MIN, OUTPUT_V_MAX);
+    float mappedY = Coordinates::map(coords.y, STANDARDIZED_OMEGA_MIN, STANDARDIZED_OMEGA_MAX, OUTPUT_OMEGA_MIN, OUTPUT_OMEGA_MAX);
+
     // Pass command to chair
-    this->pinInterface->doAnalogWrite(this->vPin, Coordinates::map(coords.x, STANDARDIZED_V_MIN, STANDARDIZED_V_MAX, OUTPUT_V_MIN, OUTPUT_V_MAX));
-    this->pinInterface->doAnalogWrite(this->omegaPin, Coordinates::map(coords.y, STANDARDIZED_OMEGA_MIN, STANDARDIZED_OMEGA_MAX, OUTPUT_OMEGA_MIN, OUTPUT_OMEGA_MAX));
+    this->pinInterface->doAnalogWrite(this->vPin, mappedX);
+    this->pinInterface->doAnalogWrite(this->omegaPin, mappedY);
     return;
 }
 

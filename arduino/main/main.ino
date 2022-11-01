@@ -13,6 +13,14 @@
 #define CHAIR_V_PIN A3
 #define CHAIR_OMEGA_PIN A4
 
+#if false
+  #define sp(...) Serial.print(__VA_ARGS__);
+  #define spl(...) Serial.println(__VA_ARGS__);
+#else
+  #define sp(...)
+  #define spl(...)
+#endif
+
 RealPinInterface pinInterface;
 Joystick joystick(JOYSTICK_X_PIN, JOYSTICK_Y_PIN, &pinInterface);
 Interrupt haltInterrupt(INTERRUPT_PIN);
@@ -24,18 +32,8 @@ void interruptFcn(){
     chair.setHalt(pinInterface.doDigitalRead(INTERRUPT_READ_PIN));
 }
 
-void setup()
+void calibrate()
 {
-    Serial.begin(9600);
-    while (!Serial)
-    {
-    }
-
-    // Pin Setup
-    joystick.setup();
-    chair.setup();
-
-    // Calibration process
     Serial.write("Don't touch the joystick. Press any key");
     while(Serial.read()==-1){}
     joystick.calibrate_middle();
@@ -51,6 +49,21 @@ void setup()
     Serial.write("Place the joystick right. Press any key");
     while(Serial.read()==-1){}
     joystick.calibrate_right();
+}
+
+void setup()
+{
+    Serial.begin(9600);
+    while (!Serial)
+    {
+    }
+
+    // Pin Setup
+    joystick.setup();
+    chair.setup();
+
+    // Calibration process
+    calibrate();
 
     // Interrupt Setup
     pinMode(INTERRUPT_READ_PIN, INPUT);
@@ -62,9 +75,9 @@ void setup()
 void loop()
 {
     joystickPosition = joystick.position();
-    Serial.print("x = ");
-    Serial.print(joystickPosition.x);
-    Serial.print(" | y = ");
-    Serial.println(joystickPosition.y);
+    sp("x = ");
+    sp(joystickPosition.x);
+    sp(" | y = ");
+    spl(joystickPosition.y);
     chair.command(joystickPosition);
 }

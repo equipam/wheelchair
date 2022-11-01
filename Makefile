@@ -39,8 +39,8 @@ jetson-setup: jetson-deps
 
 # --- TESTS
 unit-tests:
-	cd jetson && python -m pytest src
+# cd jetson && python -m pytest src
 acceptance-tests:
-	cd jetson && python -m pytest tests
+# cd jetson && python -m pytest tests
 
-test: unit-tests acceptance-tests
+# test: unit-tests acceptance-tests

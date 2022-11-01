@@ -150,7 +150,7 @@ test(chair)
 
   Chair chair = Chair(vPin, omegaPin, &interface);
   // command the max speed at max angle
-  PolarCoords command = {.v = STANDARDIZED_V_MAX, .omega = STANDARDIZED_OMEGA_MAX};
+  LinearCoords command = {.x = STANDARDIZED_V_MAX, .y = STANDARDIZED_OMEGA_MAX};
 
   chair.command(command);
 
@@ -159,13 +159,6 @@ test(chair)
   assertEqual(pins[1], 3.3);
 }
 
-test(coordinates)
-{
-  LinearCoords xy = {.x = -1, .y = 0};
-  PolarCoords vo = Coordinates::linearToPolar(xy);
-  assertEqual(vo.v, 1);
-  assertEqual(vo.omega, 180);
-}
 
 void setup()
 {

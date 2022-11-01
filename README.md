@@ -1,11 +1,11 @@
 # Wheelchair
 
-This repository holds the code developed for Systems Engineering @FEUP on 2022/2023.
-It's purpose is to control an eletric wheelchair and, using sensors, avoid front collisions.
+This repository holds the code developed for Systems Engineering @FEUP in 2022/2023.
+Its purpose is to control an electric wheelchair and, using sensors, avoid collisions.
 
 ---
 
-## Windows development depedencies
+## Windows development dependencies
 
 - [Python](https://www.python.org/downloads/) 3.8 or above
 - [Arduino IDE](https://www.arduino.cc/en/software)
@@ -13,7 +13,7 @@ It's purpose is to control an eletric wheelchair and, using sensors, avoid front
 - Make (install instructions [here](#choco-package-manager))
 - [Visual Studio Code](https://code.visualstudio.com/) (Optional)
 
-## Linux development depedencies
+## Linux development dependencies
 
 - [Python](https://www.python.org/downloads/) 3.8 or above
 - [Arduino IDE](https://www.arduino.cc/en/software)
@@ -29,7 +29,7 @@ Prepare development environment
 make dev-setup
 ```
 
-Running Python tests
+Running tests
 
 ```console
 make test
@@ -39,7 +39,7 @@ make test
 
 ## Arduino Development Environment
 
-- ### Vscode extension
+- ### VsCode extension
 
 Install the official Arduino extension:
 
@@ -64,7 +64,7 @@ If these are not already set, on the bottom bar of VsCode click on:
 ## Build for Arduino
 
 Connect the Arduino and click on \<Select Serial Port> (bottom bar),
-selecting the serial port that corresponds to it's connection.
+selecting the serial port that corresponds to its connection.
 
 With any file ending in .ino open, click on the top right buttons to verify or upload code.
 Alternatively, you might click F1 and write the commands "Arduino: Verify" or "Arduino: Upload" and press the Enter key.
@@ -109,26 +109,7 @@ choco install make
 
 ## Standards
 
-### Python
-
-<https://visualgit.readthedocs.io/en/latest/pages/naming_convention.html>
-
-- Snake case for function and variable names:
-
- ```python
-    def this_is_a_function():
-        this_is_a_variable = 1
-        return
- ```
-
-- Camel case for class names:
-
- ```python
-    class SSLidarDriver:
-        ...
- ```
-
-### Arduino (C++)
+### C++
 
 - The class name should be a noun.
 - Use upper case letters as word separators, lower case for the rest of the word in the class name.
