@@ -3,8 +3,8 @@ Description=Wheelchair Detection Kit
 
 [Service]
 User=root
-WorkingDirectory=/home/iw20/wheelchair
-ExecStart=./jetson/run.sh
+WorkingDirectory=/home/iw20/wheelchair/jetson/lib
+ExecStart=/home/iw20/wheelchair/jetson/lib/app
 Restart=always
 
 [Install]

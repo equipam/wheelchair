@@ -38,7 +38,7 @@ jetson-build:
 	cd jetson/lib && make
 
 jetson-service:
-	sudo mv -f ./jetson/wheelchair.service /etc/systemd/system/
+	sudo cp -f ./jetson/wheelchair.service /lib/systemd/system/
 	sudo systemctl daemon-reload
 
 jetson-service-activation:
