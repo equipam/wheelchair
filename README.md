@@ -26,38 +26,43 @@ Prepare development environment
 make dev-setup
 ```
 
-Running tests
+Run local tests
 
 ```console
-make test
+make test-local
 ```
 
 ---
 
 ## Deployment
 
-ssh into Jetson Nano, then:
+
+SSH into Jetson Nano, then:
+
+- Add user to dialout (needed to interact with SSlidar and Arduino):
+
+```console
+sudo usermod -a -G dialout $USER
+```
+
+- Reboot or log out, log in. Then:
 
 ```console
 git clone 
 cd wheelchair
 ```
 
+- Running tests:
+
 ```console
-make jetson-setup
-make jetson-install
+make test
 ```
 
-To start the app service:
+- Deployment
 
 ```console
-sudo systemctl start wheelchair.service
-```
-
-To make it run always (once it boots):
-
-```console
-sudo systemctl enable wheelchair.service
+make setup
+make deploy
 ```
 
 ---

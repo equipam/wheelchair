@@ -11,20 +11,14 @@ else
 	cp --symbolic-link $(PWD)/arduino/main/*.cpp $(PWD)/arduino/tests/
 endif
 
-#deps:
-#ifeq ($(OS),Windows_NT)
-#	choco install 
-#else
-#	sudo apt-get install 
-#endif
-
-dev-setup: deps sym-links
+dev-setup: sym-links
 
 # ---
 
 # --- Jetson Nano
 
 JETSON_USER := iw20
+ARDUINO_PORT := /dev/ttyUSB0
 
 jetson-setup:
 	git clone https://github.com/pjueon/JetsonGPIO
@@ -49,15 +43,16 @@ jetson-install: jetson-build jetson-service
 
 # --- Arduino setup for Jetson Nano
 arduino-setup:
+# sudo usermod -a -G dialout $(JETSON_USER)
 	sudo apt-get install wget
 	sudo apt-get install screen
 	mkdir output
 	wget https://downloads.arduino.cc/arduino-1.8.19-linuxaarch64.tar.xz
 	tar -xf arduino-1.8.19-linuxaarch64.tar.xz
 	rm arduino-1.8.19-linuxaarch64.tar.xz
-	./arduino-1.8.19/arduino --install-boards arduino:avr:nano:cpu=atmega168
+#./arduino-1.8.19/arduino --install-boards "arduino:avr:nano:cpu=atmega328p"
 	./arduino-1.8.19/arduino --install-library "ArduinoUnit:3.0.4"
-	./arduino-1.8.19/arduino --pref build.path=$(pwd)/output --board arduino:avr:nano:cpu=atmega168 --save-prefs
+	./arduino-1.8.19/arduino --pref build.path=$(pwd)/output --save-prefs
 
 arduino-upload:
 	./arduino-1.8.19/arduino --upload ./arduino/main/main.ino
@@ -74,7 +69,9 @@ jetson-test:
 	echo "no tests to run for jetson"
 
 arduino-test: sym-links
-	./arduino-1.8.19/arduino --upload ./arduino/tests/tests.ino
-	screen /dev/ttyUSB0 9600
+	./arduino-1.8.19/arduino --upload ./arduino/tests/tests.ino --port $(ARDUINO_PORT)
+	timeout 10s screen $(ARDUINO_PORT) 9600
+
+test-local: jetson-test
 
 test: jetson-test arduino-test
