@@ -54,6 +54,7 @@ arduino-setup:
 	mkdir output
 	wget https://downloads.arduino.cc/arduino-1.8.19-linuxaarch64.tar.xz
 	tar -xf arduino-1.8.19-linuxaarch64.tar.xz
+	rm arduino-1.8.19-linuxaarch64.tar.xz
 	./arduino-1.8.19/arduino --install-boards arduino:avr:nano:cpu=atmega168
 	./arduino-1.8.19/arduino --install-library "ArduinoUnit:3.0.4"
 	./arduino-1.8.19/arduino --pref build.path=$(pwd)/output --board arduino:avr:nano:cpu=atmega168 --save-prefs
@@ -64,7 +65,7 @@ arduino-upload:
 # Setup and deploy
 setup: jetson-setup arduino-setup
 
-deploy: jetson-install
+deploy: jetson-install jetson-service jetson-service-activation arduino-upload
 
 # ---
 
