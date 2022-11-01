@@ -1,0 +1,11 @@
+[Unit]
+Description=Wheelchair Detection Kit
+
+[Service]
+User=root
+WorkingDirectory=/home/iw20/wheelchair
+ExecStart=./jetson/run.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

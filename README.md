@@ -4,10 +4,8 @@ This repository holds the code developed for Systems Engineering @FEUP in 2022/2
 Its purpose is to control an electric wheelchair and, using sensors, avoid collisions.
 
 ---
-
 ## Windows development dependencies
 
-- [Python](https://www.python.org/downloads/) 3.8 or above
 - [Arduino IDE](https://www.arduino.cc/en/software)
 - Choco package manager (install instructions [here](#make))
 - Make (install instructions [here](#choco-package-manager))
@@ -15,13 +13,12 @@ Its purpose is to control an electric wheelchair and, using sensors, avoid colli
 
 ## Linux development dependencies
 
-- [Python](https://www.python.org/downloads/) 3.8 or above
 - [Arduino IDE](https://www.arduino.cc/en/software)
 - [Visual Studio Code](https://code.visualstudio.com/) (Optional)
 
 ---
 
-## Make targets
+## Development
 
 Prepare development environment
 
@@ -33,6 +30,34 @@ Running tests
 
 ```console
 make test
+```
+
+---
+
+## Deployment
+
+ssh into Jetson Nano, then:
+
+```console
+git clone 
+cd wheelchair
+```
+
+```console
+make jetson-setup
+make jetson-install
+```
+
+To start the app service:
+
+```console
+sudo systemctl start wheelchair.service
+```
+
+To make it run always (once it boots):
+
+```console
+sudo systemctl enable wheelchair.service
 ```
 
 ---
