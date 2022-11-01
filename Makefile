@@ -55,7 +55,7 @@ arduino-setup:
 	./arduino-1.8.19/arduino --pref build.path=$(pwd)/output --save-prefs
 
 arduino-upload:
-	./arduino-1.8.19/arduino --upload ./arduino/main/main.ino
+	./arduino-1.8.19/arduino --upload ./arduino/main/main.ino --port $(ARDUINO_PORT)
 
 # Setup and deploy
 setup: jetson-setup arduino-setup
