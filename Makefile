@@ -75,6 +75,6 @@ jetson-test:
 
 arduino-test: sym-links
 	./arduino-1.8.19/arduino --upload ./arduino/tests/tests.ino
-	screen /dev/ttyACM0 9600
+	screen /dev/ttyUSB0 9600
 
 test: jetson-test arduino-test
