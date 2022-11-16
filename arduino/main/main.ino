@@ -23,14 +23,10 @@
 
 RealPinInterface pinInterface;
 Joystick joystick(JOYSTICK_X_PIN, JOYSTICK_Y_PIN, &pinInterface);
-Interrupt haltInterrupt(INTERRUPT_PIN);
 Chair chair(CHAIR_V_PIN, CHAIR_OMEGA_PIN, &pinInterface);
 
 LinearCoords joystickPosition;
 
-void interruptFcn(){
-    chair.setHalt(pinInterface.doDigitalRead(INTERRUPT_READ_PIN));
-}
 
 void calibrate()
 {
@@ -63,11 +59,7 @@ void setup()
     chair.setup();
 
     // Calibration process
-    calibrate();
-
-    // Interrupt Setup
-    pinMode(INTERRUPT_READ_PIN, INPUT);
-    haltInterrupt.setup(interruptFcn, CHANGE);
+    // calibrate();
 
     return;
 }
