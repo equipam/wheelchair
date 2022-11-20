@@ -9,13 +9,16 @@
 #include <fcntl.h>
 #include <stdarg.h>
 #include <math.h>
-#include <JetsonGPIO.h>
 
 #include "HPS3DUser_IF.h"
+#include "ObstacleFinder.h"
 
 #define DEVICE_BIND "/dev/ttyACM0"
 #define INTERRUPT_PIN 11 // TODO figure out the pin
 #define COLLISION_DISTANCE_THRESHOLD 500 // TODO figure out the units
+#define MAX_RANSAC_ITERATIONS 50
+#define RANSAC_THRESHOLD 3.0
+#define CLUSTERING_THRESHOLD 10
 
 int g_handle = -1;
 int m_handle[8] = {-1};
@@ -23,17 +26,13 @@ static HPS3D_MeasureData_t g_measureData;
 
 static bool collisionDetected = false;
 
-void handleInterrupt(uint16_t distanceMin)
+void handleInterrupt(HPS3D_PointCloudData_t cloud)
 {
-	if (distanceMin < COLLISION_DISTANCE_THRESHOLD && !collisionDetected)
-	{
-		printf("Collision detected!\n");
-		GPIO::output(INTERRUPT_PIN, GPIO::HIGH);
-		collisionDetected = true;
-		return;
-	}
-	GPIO::output(INTERRUPT_PIN, GPIO::LOW);
-	collisionDetected = false;
+	// each element of clusters is an array of indexes of points in same cluster
+	std::vector<std::vector<int>> clusters;
+	clusters = ObstacleFinder::find(cloud, MAX_RANSAC_ITERATIONS, RANSAC_THRESHOLD, CLUSTERING_THRESHOLD);
+
+	// TODO diversion strategy
 }
 
 static bool PrintResultData(HPS3D_EventType_t type, HPS3D_MeasureData_t data)
@@ -44,48 +43,14 @@ static bool PrintResultData(HPS3D_EventType_t type, HPS3D_MeasureData_t data)
 	{
 	case HPS3D_SIMPLE_ROI_EVEN: //简单ROI数据包  不含每个点的深度数据
 		{
-			printf("*************  HPS3D_SIMPLE_ROI_EVEN  ********************\n");
-			num = data.simple_roi_data[0].roi_num;
-			int i = 0;
-			for (i = 0; i < num; i++)
-			{
-				printf("  ********GroupID:%d  ROIID:%d  *******\n", data.simple_roi_data[i].group_id, data.simple_roi_data[i].roi_id);
-				printf("    distance_average:%d\n", data.simple_roi_data[i].distance_average);
-				printf("    distance_min    :%d\n", data.simple_roi_data[i].distance_min);
-				printf("    saturation_count:%d\n", data.simple_roi_data[i].saturation_count);
-				printf("    threshold_state :%d\n", data.simple_roi_data[i].threshold_state);
-				printf("    =====================================\n\n");
-			}
-			handleInterrupt(data.simple_roi_data[i].distance_min);
 			break;
 		}
 	case HPS3D_FULL_ROI_EVEN: //完整ROI数据包
 		{
-			printf("*************  HPS3D_FULL_ROI_EVEN  ********************\n");
-			num = data.full_roi_data[0].roi_num;
-			for (i = 0; i < num; i++)
-			{
-				printf("  ********GroupID:%d  ROIID:%d  *******\n", data.full_roi_data[i].group_id, data.full_roi_data[i].roi_id);
-				printf("    ROI Left Top    :(%d,%d)\n", data.full_roi_data[i].left_top_x, data.full_roi_data[i].left_top_y);
-				printf("    ROI Right Bottom:(%d,%d)\n", data.full_roi_data[i].right_bottom_x, data.full_roi_data[i].right_bottom_y);
-				printf("    ROI Pixel Number:%d\n", data.full_roi_data[i].pixel_number);
-				printf("    distance_average:%d\n", data.full_roi_data[i].distance_average);
-				printf("    distance_min    :%d\n", data.full_roi_data[i].distance_min);
-				printf("    saturation_count:%d\n", data.full_roi_data[i].saturation_count);
-				printf("    threshold_state :%d\n", data.full_roi_data[i].threshold_state);
-				printf("    =====================================\n\n");
-			}
-			handleInterrupt(data.full_roi_data[i].distance_min);
 			break;
 		}
 	case HPS3D_SIMPLE_DEPTH_EVEN: //简单深度数据包，不含每个点距离及点云数据
-		{		
-			printf("*************  HPS3D_SIMPLE_DEPTH_EVEN  ********************\n");
-			printf(" distance_average:%d\n", data.simple_depth_data.distance_average);
-			printf(" distance_min    :%d\n", data.simple_depth_data.distance_min);
-			printf(" saturation_count:%d\n", data.simple_depth_data.saturation_count);
-			printf("==========================================================\n\n");
-			handleInterrupt(data.simple_depth_data.distance_min);
+		{	
 			break;
 		}
 	case HPS3D_FULL_DEPTH_EVEN: //完整深度图数据包，含点云数据
@@ -112,7 +77,7 @@ static bool PrintResultData(HPS3D_EventType_t type, HPS3D_MeasureData_t data)
 				data.full_depth_data.point_cloud_data.point_data[1].y, data.full_depth_data.point_cloud_data.point_data[1].z);
 			printf("Point amount: %d\n", data.full_depth_data.point_cloud_data.points);
 			
-			handleInterrupt(data.full_depth_data.distance_min);
+			handleInterrupt(data.full_depth_data.point_cloud_data);
 			printf("==========================================================\n\n");
 			break;
 		}
@@ -168,20 +133,12 @@ void signal_handler(int signo)
 	HPS3D_StopCapture(g_handle);
 	HPS3D_CloseDevice(g_handle);
 	printf("Device disconnected!\n\n");
-	GPIO::cleanup(INTERRUPT_PIN);
 	exit(0);
 }
 
-void gpioSetup()
-{
-	GPIO::setmode(GPIO::BOARD);
-	GPIO::setwarnings(false);
-	GPIO::setup(INTERRUPT_PIN, GPIO::OUT, GPIO::LOW);
-}
 
 int main()
 {
-	gpioSetup();
 	printf("HPS3D160 C/C++ Demo (Visual Statudio 2017)\n\n");
 
 	printf("SDK Ver:%s\n", HPS3D_GetSDKVersion());
@@ -262,7 +219,6 @@ int main()
 	HPS3D_StopCapture(handle);
 	HPS3D_CloseDevice(handle);
 	HPS3D_MeasureDataFree(&g_measureData);
-	GPIO::cleanup(INTERRUPT_PIN);
 	system("pause");
 }
 
