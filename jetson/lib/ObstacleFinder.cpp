@@ -10,13 +10,23 @@
 namespace ObstacleFinder
 {
 
+    /// @brief Find obstacles within point cloud data from SSLidar
+    /// @param cloud Point cloud data
+    /// @param maxRansacIterations 
+    /// @param ransacThreshold 
+    /// @param clusteringThreshold 
+    /// @return Array of clusters, represented by an array of indexes each
     std::vector<std::vector<int>> find(HPS3D_PointCloudData_t cloud, int maxRansacIterations, float ransacThreshold, float clusteringThreshold)
     {
-
+        
+        // First find the base plane of the scene (the road, or pavement, etc.)
+        // The ransac returns inliers, so we have fewer points of interest to
+        // search obstacles
         std::unordered_set<int> inliers = Ransac::plane(cloud, maxRansacIterations, ransacThreshold);
 
         int outlierAmmount = inliers.size() - cloud.points;
 
+        // Save the outlier points in a different variable
         std::vector<std::vector<float>> cloudOutliers(outlierAmmount);
 
         size_t outlierIndex = 0;
@@ -27,14 +37,14 @@ namespace ObstacleFinder
             }
         }
 
-        // Create data
-        //std::vector<std::vector<float>> points = { {-6.2,7,1}, {-6.3,8.4,1}, {-5.2,7.1,1}, {-5.7,6.3,1}, {7.2,6.1,1}, {8.0,5.3,1}, {7.2,7.1,1}, {0.2,-7.1,1}, {1.7,-6.9,1}, {-1.2,-7.2,1}, {2.2,-8.9,1}};
-
+        // Save cloud data in a KdTree <https://en.wikipedia.org//wiki/K-d_tree>
         KdTree* tree = new KdTree;
 
         for (int i=0; i<cloudOutliers.size(); i++) 
             tree->insert(cloudOutliers[i],i); 
 
+
+        // Apply euclidean clustering to find objects within the outliers
         std::vector<std::vector<int>> clusters = Clustering::euclideanCluster(cloudOutliers, tree, clusteringThreshold);
 
         std::cout << "clustering found " << clusters.size() << std::endl;
