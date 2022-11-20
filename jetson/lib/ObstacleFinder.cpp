@@ -40,9 +40,10 @@ namespace ObstacleFinder
         // Save cloud data in a KdTree <https://en.wikipedia.org//wiki/K-d_tree>
         KdTree* tree = new KdTree;
 
-        for (int i=0; i<cloudOutliers.size(); i++) 
+        for (size_t i=0; i<cloudOutliers.size(); i++)
+        {
             tree->insert(cloudOutliers[i],i); 
-
+        }
 
         // Apply euclidean clustering to find objects within the outliers
         std::vector<std::vector<int>> clusters = Clustering::euclideanCluster(cloudOutliers, tree, clusteringThreshold);
