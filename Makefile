@@ -66,7 +66,9 @@ deploy: jetson-install jetson-service jetson-service-activation arduino-upload
 
 # --- TESTS
 jetson-test:
-	echo "no tests to run for jetson"
+	cd jetson/tests && \
+	make build && \
+	make run
 
 arduino-test: sym-links
 	./arduino-1.8.19/arduino --upload ./arduino/tests/tests.ino --port $(ARDUINO_PORT)
