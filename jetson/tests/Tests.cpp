@@ -7,18 +7,17 @@ class SerialInterfaceTest: public BaseTest
 public:
     void _run()
     {
-        this->name = "SerialInterfaceTest";
+        this->name = "Test SerialInterface";
         
         SerialInterface serialInterface;
         bool halt = 0;
         int x = 42;
         int y = 69;
-        const char* expectedPacket = "0;0042;0069";
-        char* packet;
-        
+        std::string expectedPacket = "0;0042;0069";
+        std::string packet;
         packet = serialInterface.createPacket(halt, x, y);
 
-        ASSERT(strcmp(expectedPacket, packet) != 0);
+        ASSERT(packet.compare(expectedPacket) == 0);
     }
 };
 
