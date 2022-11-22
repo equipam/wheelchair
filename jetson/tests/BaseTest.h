@@ -1,7 +1,7 @@
 #if !defined(BASETEST_H)
 #define BASETEST_H
 
-#define ASSERT(cond) (cond ? throw 1 : NULL)
+#define ASSERT(cond) (cond ? NULL : throw 1)
 
 #include <string>
 #include <iostream>
