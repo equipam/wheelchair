@@ -14,8 +14,6 @@
 #include "ObstacleFinder.h"
 
 #define DEVICE_BIND "/dev/ttyACM0"
-#define INTERRUPT_PIN 11 // TODO figure out the pin
-#define COLLISION_DISTANCE_THRESHOLD 500 // TODO figure out the units
 #define MAX_RANSAC_ITERATIONS 50
 #define RANSAC_THRESHOLD 3.0
 #define CLUSTERING_THRESHOLD 10
