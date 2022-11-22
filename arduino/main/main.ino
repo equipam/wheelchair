@@ -5,6 +5,7 @@
 #include "Joystick.h"
 #include "Chair.h"
 #include "PinInterface.h"
+#include "Packets.h"
 
 #define JOYSTICK_X_PIN A1
 #define JOYSTICK_Y_PIN A2
@@ -27,6 +28,8 @@ Chair chair(CHAIR_V_PIN, CHAIR_OMEGA_PIN, &pinInterface);
 
 LinearCoords joystickPosition;
 
+String rawPacket;
+Packets::InformationPacket infoPacket;
 
 void calibrate()
 {
@@ -49,7 +52,7 @@ void calibrate()
 
 void setup()
 {
-    Serial.begin(9600);
+    Serial.begin(115200);
     while (!Serial)
     {
     }
@@ -67,9 +70,30 @@ void setup()
 void loop()
 {
     joystickPosition = joystick.position();
-    sp("x = ");
+
+    /*sp("joystick x = ");
     sp(joystickPosition.x);
     sp(" | y = ");
-    spl(joystickPosition.y);
+    spl(joystickPosition.y);*/
+
+    infoPacket = Packets::decode(rawPacket);
+
+    if(infoPacket.overwrite)
+    {
+      joystickPosition.x = infoPacket.x
+      joystickPosition.y = infoPacket.y
+    }
+
+    /*sp("final x = ");
+    sp(joystickPosition.x);
+    sp(" | y = ");
+    spl(joystickPosition.y);*/
+
     chair.command(joystickPosition);
+}
+
+void serialEvent() {
+  while (Serial.available()) {
+    rawPacket = Serial.readString();
+  }
 }
