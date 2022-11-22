@@ -1,13 +1,11 @@
 #include "SerialInterface.h"
-#include <libserial/SerialPort.h>
-//#include <libserial/SerialStream.h>
 
+#include <libserial/SerialPort.h>
 #include <cstddef>
 #include <unistd.h>
 #include <cstdlib>
 #include <string>
 #include <cstring>
-
 #include <iostream>
 
 //using namespace LibSerial; 
@@ -15,7 +13,7 @@ using LibSerial::SerialPort;
 
 SerialInterface::SerialInterface()
 {
-    SerialPort serial_stream;
+    SerialPort serialStream;
 }
 
 /// @brief Connects interface to serial port
@@ -24,7 +22,7 @@ void SerialInterface::setup(char* port)
 {
     try
         {
-            serial_stream.Open(&port);
+            serialStream.Open(port);
         }
         catch(const std::exception& e)
         {
@@ -32,11 +30,11 @@ void SerialInterface::setup(char* port)
         }
     // Set the baud rates.
     using LibSerial::BaudRate ;
-    serial_stream.SetBaudRate( BaudRate::BAUD_115200 ) ;
-    serial_stream.SetCharacterSize( LibSerial::CharacterSize::CHAR_SIZE_8);
-    serial_stream.SetFlowControl(LibSerial::FlowControl::FLOW_CONTROL_NONE);
-    serial_stream.SetParity(LibSerial::Parity::PARITY_NONE);
-    serial_stream.SetStopBits(LibSerial::StopBits::STOP_BITS_1);
+    serialStream.SetBaudRate( BaudRate::BAUD_115200 ) ;
+    serialStream.SetCharacterSize( LibSerial::CharacterSize::CHAR_SIZE_8);
+    serialStream.SetFlowControl(LibSerial::FlowControl::FLOW_CONTROL_NONE);
+    serialStream.SetParity(LibSerial::Parity::PARITY_NONE);
+    serialStream.SetStopBits(LibSerial::StopBits::STOP_BITS_1);
 
     return;
 }
@@ -44,7 +42,7 @@ void SerialInterface::setup(char* port)
 /// @brief Disconnects from the current serial port
 void SerialInterface::cleanup()
 {
-    serial_stream.Close();
+    serialStream.Close();
     return;
 }
 
@@ -54,40 +52,36 @@ void SerialInterface::cleanup()
 /// @param x 
 /// @param y 
 /// @return Returns a fixed length char array of the packet
-char SerialInterface::createPacket(bool halt, float x, float y)
+std::string SerialInterface::createPacket(bool halt, int x, int y)
 {
     //char send[12] = "1;0001;0069";
     char send[11] = "";
     send[0] = '0' + halt;
     send[1] = ';';
-    send[2] = '0' + (int)x / 1000 % 10;
-    send[3] = '0' + (int)x / 100 % 10;
-    send[4] = '0' + (int)x / 10 % 10;
-    send[5] = '0' + (int)x / 1 % 10;
+    send[2] = '0' + x / 1000 % 10;
+    send[3] = '0' + x / 100 % 10;
+    send[4] = '0' + x / 10 % 10;
+    send[5] = '0' + x / 1 % 10;
     send[6] = ';';
-    send[7] = '0' + (int)y / 1000 % 10;
-    send[8] = '0' + (int)y / 100 % 10;
-    send[9] = '0' + (int)y / 10 % 10;
-    send[10] = '0' + (int)y / 1 % 10;
+    send[7] = '0' + y / 1000 % 10;
+    send[8] = '0' + y / 100 % 10;
+    send[9] = '0' + y / 10 % 10;
+    send[10] = '0' + y / 1 % 10;
 
-    return send;
+    return std::string(send);
 }
 
 /// @brief Creates and sends a packet to the serial port
 /// @param halt 
 /// @param x 
 /// @param y 
-void SerialInterface::sendPacket(bool halt, float x, float y)
+void SerialInterface::sendPacket(bool halt, int x, int y)
 {
-    //std::string input_buffer;
-    char send[11] = createPacket(halt, x, y)
-    //std::cout << send << std::endl;
+    std::string send = createPacket(halt, x, y);
 
     try
     {
-        serial_stream.Write(send);
-        //serial_stream.ReadLine(input_buffer);
-        //std::cout << input_buffer << std::endl;
+        serialStream.Write(send.c_str());
     }
     catch(const std::exception& e)
     {
