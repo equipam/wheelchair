@@ -19,7 +19,7 @@ void RealPinInterface::doAnalogWrite(uint8_t pin, float val)
     float finalVal = val;
     if(val < 0) finalVal = 0;
     if(val > 3.3) finalVal = 3.3;
-    int realVal = static_cast<int>(finalVal / ANALOG_RESOLUTION);
+    int realVal = static_cast<int>(finalVal * 3.3/255);
     analogWrite(pin, realVal);
 }
 
