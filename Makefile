@@ -42,13 +42,20 @@ arduino-setup:
 # sudo usermod -a -G dialout $(JETSON_USER)
 	sudo apt-get install wget
 	sudo apt-get install screen
+	rm -rf output
 	mkdir output
+ifeq ($(uname -m),aarch64)
 	wget https://downloads.arduino.cc/arduino-1.8.19-linuxaarch64.tar.xz
 	tar -xf arduino-1.8.19-linuxaarch64.tar.xz
 	rm arduino-1.8.19-linuxaarch64.tar.xz
+else
+	wget https://downloads.arduino.cc/arduino-1.8.19-linux64.tar.xz
+	tar -xf arduino-1.8.19-linux64.tar.xz
+	rm arduino-1.8.19-linux64.tar.xz
+endif
 #./arduino-1.8.19/arduino --install-boards "arduino:avr:nano:cpu=atmega328p"
 	./arduino-1.8.19/arduino --install-library "ArduinoUnit:3.0.4"
-	./arduino-1.8.19/arduino --pref build.path=$(pwd)/output --save-prefs
+	./arduino-1.8.19/arduino --pref build.path=output --save-prefs
 
 arduino-upload:
 	./arduino-1.8.19/arduino --upload ./arduino/main/main.ino --port $(ARDUINO_PORT)
