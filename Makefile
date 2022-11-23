@@ -13,6 +13,9 @@ endif
 
 dev-setup: sym-links
 
+deps:
+	sudo apt-get install -y libserial-dev
+
 # ---
 
 # --- Jetson Nano
