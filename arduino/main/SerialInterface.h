@@ -3,9 +3,11 @@
 
 #include <Arduino.h>
 
+#define PACKET_SIZE 11
+
 struct InformationPacket
 {
-    bool halt;
+    bool overwrite;
     float x;
     float y;
     unsigned long timestamp;
@@ -14,10 +16,12 @@ struct InformationPacket
 class SerialInterface
 {
 private:
-    InformationPacket latestPacket = {.halt = false, .x = 0.0, .y = 0.0, .timestamp = 0};
+    Stream* stream;
+    InformationPacket latestPacket = {.overwrite = false, .x = 0.0, .y = 0.0, .timestamp = 0};
 public:
     SerialInterface();
-    void attach(Stream &io);
+    void attach(Stream* io);
+    InformationPacket decodePacket(char* rawPacket);
     InformationPacket readPacket();
 };
 
