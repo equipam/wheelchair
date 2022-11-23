@@ -145,15 +145,31 @@ test(serial_interface)
   MockStream ms;
   SerialInterface serialInterface = SerialInterface();
 
-  serialInterface.attach(ms);
+  serialInterface.attach(&ms);
 
   ms.input.print("0;0042;0069");
-  InformationPacket expectedPacket = {.halt=0, .x=42, .y=69};
+  InformationPacket expectedPacket = {.overwrite=false, .x=42.0/1023.0, .y=69.0/1023.0};
 
   InformationPacket result;
   result = serialInterface.readPacket();
   
-  assertEqual(result.halt, expectedPacket.halt);
+  assertEqual(result.overwrite, expectedPacket.overwrite);
+  assertEqual(result.x, expectedPacket.x);
+  assertEqual(result.y, expectedPacket.y);
+}
+
+test(decode)
+{
+  SerialInterface serialInterface = SerialInterface();
+
+  InformationPacket expectedPacket = {.overwrite=false, .x=42.0/1023.0, .y=69.0/1023.0};
+
+  char rawPacket[12] = "0;0042;0069";
+
+  InformationPacket result;
+  result = serialInterface.decodePacket(rawPacket);
+  
+  assertEqual(result.overwrite, expectedPacket.overwrite);
   assertEqual(result.x, expectedPacket.x);
   assertEqual(result.y, expectedPacket.y);
 }
