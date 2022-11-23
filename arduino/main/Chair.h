@@ -5,9 +5,9 @@
 #include "PinInterface.h"
 #include "Arduino.h"
 
-#define STANDARDIZED_V_MIN 0
+#define STANDARDIZED_V_MIN -1
 #define STANDARDIZED_V_MAX 1
-#define STANDARDIZED_OMEGA_MIN 0
+#define STANDARDIZED_OMEGA_MIN -1
 #define STANDARDIZED_OMEGA_MAX 1
 
 #define OUTPUT_V_MIN 0
