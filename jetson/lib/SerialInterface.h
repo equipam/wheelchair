@@ -10,13 +10,13 @@ using LibSerial::SerialPort;
 class SerialInterface
 {
 private:
-    SerialPort serial_port;
-    void packetCreator(bool overwrite, float x, float y);
+    SerialPort serialStream;
 public:
     SerialInterface();
     void setup(char* port);
     void cleanup();
-    void sendPacket(bool overwrite, float x, float y);
+    std::string createPacket(bool overwrite, int x, int y);
+    void sendPacket(bool overwrite, int x, int y);
 };
 
 #endif
