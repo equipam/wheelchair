@@ -12,7 +12,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Install libserial
-      run: sudo apt-get install -y libserial-dev
+    - name: make deps
+      run: make deps
     - name: make test-local
       run: make test-local
