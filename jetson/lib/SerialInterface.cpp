@@ -8,7 +8,7 @@
 #include <cstring>
 #include <iostream>
 
-//using namespace LibSerial; 
+// using namespace LibSerial;
 using LibSerial::SerialPort;
 
 SerialInterface::SerialInterface()
@@ -18,20 +18,20 @@ SerialInterface::SerialInterface()
 
 /// @brief Connects interface to serial port
 /// @param port The port name to connect to (e.g. "/dev/ttyUSB0")
-void SerialInterface::setup(char* port)
+void SerialInterface::setup(char *port)
 {
     try
-        {
-            serialStream.Open(port);
-        }
-        catch(const std::exception& e)
-        {
-            std::cerr << e.what() << '\n';
-        }
+    {
+        serialStream.Open(port);
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
+    }
     // Set the baud rates.
-    using LibSerial::BaudRate ;
-    serialStream.SetBaudRate( BaudRate::BAUD_115200 ) ;
-    serialStream.SetCharacterSize( LibSerial::CharacterSize::CHAR_SIZE_8);
+    using LibSerial::BaudRate;
+    serialStream.SetBaudRate(BaudRate::BAUD_115200);
+    serialStream.SetCharacterSize(LibSerial::CharacterSize::CHAR_SIZE_8);
     serialStream.SetFlowControl(LibSerial::FlowControl::FLOW_CONTROL_NONE);
     serialStream.SetParity(LibSerial::Parity::PARITY_NONE);
     serialStream.SetStopBits(LibSerial::StopBits::STOP_BITS_1);
@@ -48,13 +48,13 @@ void SerialInterface::cleanup()
 
 /// @brief Creates a fixed length char information packet to relay
 /// Example: halt=1, x=1023 and y=1023 returns "1;1023;1023"
-/// @param halt 
-/// @param x 
-/// @param y 
+/// @param halt
+/// @param x
+/// @param y
 /// @return Returns a fixed length char array of the packet
 std::string SerialInterface::createPacket(bool halt, int x, int y)
 {
-    //char send[12] = "1;0001;0069";
+    // char send[12] = "1;0001;0069";
     char send[11] = "";
     send[0] = '0' + halt;
     send[1] = ';';
@@ -72,9 +72,9 @@ std::string SerialInterface::createPacket(bool halt, int x, int y)
 }
 
 /// @brief Creates and sends a packet to the serial port
-/// @param halt 
-/// @param x 
-/// @param y 
+/// @param halt
+/// @param x
+/// @param y
 void SerialInterface::sendPacket(bool halt, int x, int y)
 {
     std::string send = createPacket(halt, x, y);
@@ -83,10 +83,10 @@ void SerialInterface::sendPacket(bool halt, int x, int y)
     {
         serialStream.Write(send.c_str());
     }
-    catch(const std::exception& e)
+    catch (const std::exception &e)
     {
         std::cerr << e.what() << '\n';
     }
-    
+
     return;
 }

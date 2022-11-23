@@ -2,13 +2,13 @@
 #include "BaseTest.h"
 #include "../lib/SerialInterface.h"
 
-class SerialInterfaceTest: public BaseTest
+class SerialInterfaceTest : public BaseTest
 {
 public:
     void _run()
     {
         this->name = "Test SerialInterface";
-        
+
         SerialInterface serialInterface;
         bool halt = 0;
         int x = 42;
@@ -26,8 +26,7 @@ namespace Tests
     std::vector<std::shared_ptr<BaseTest>> getTests()
     {
         std::vector<std::shared_ptr<BaseTest>> tests;
-        tests.push_back(std::make_shared<SerialInterfaceTest> () );
+        tests.push_back(std::make_shared<SerialInterfaceTest>());
         return tests;
     }
 } // namespace Tests
-

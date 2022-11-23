@@ -1,13 +1,16 @@
 #include "BaseTest.h"
 
 BaseTest::BaseTest()
-{}
+{
+}
 
 BaseTest::~BaseTest()
-{}
+{
+}
 
 void BaseTest::_run()
-{}
+{
+}
 
 bool BaseTest::run()
 {
@@ -18,7 +21,7 @@ bool BaseTest::run()
 		this->_run();
 		status = "✔️";
 	}
-	catch(int error)
+	catch (int error)
 	{
 		status = "❌";
 		success = false;

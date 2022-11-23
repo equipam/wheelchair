@@ -11,9 +11,10 @@ class SerialInterface
 {
 private:
     SerialPort serialStream;
+
 public:
     SerialInterface();
-    void setup(char* port);
+    void setup(char *port);
     void cleanup();
     std::string createPacket(bool overwrite, int x, int y);
     void sendPacket(bool overwrite, int x, int y);

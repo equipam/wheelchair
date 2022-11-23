@@ -11,6 +11,4 @@ namespace Tests
     std::vector<std::shared_ptr<BaseTest>> getTests();
 } // namespace Tests
 
-
 #endif // TESTS_H
-

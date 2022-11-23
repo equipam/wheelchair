@@ -6,8 +6,9 @@
 #include <memory>
 #include <vector>
 
-int main(){
-	std::vector<std::shared_ptr<BaseTest>> tests;
+int main()
+{
+    std::vector<std::shared_ptr<BaseTest>> tests;
     tests = Tests::getTests();
     bool failing = false;
     for (size_t i = 0; i < tests.size(); i++)
@@ -23,5 +24,5 @@ int main(){
         return -1;
     }
 
-	return 0;
+    return 0;
 }
