@@ -11,7 +11,7 @@ else
 	cp --symbolic-link $(PWD)/arduino/main/*.cpp $(PWD)/arduino/tests/
 endif
 
-dev-setup: sym-links
+dev-setup: deps sym-links
 
 deps:
 
@@ -22,13 +22,7 @@ deps:
 JETSON_USER := iw20
 ARDUINO_PORT := /dev/ttyUSB0
 
-jetson-setup:
-	git clone https://github.com/pjueon/JetsonGPIO
-	cd JetsonGPIO && \
-	mkdir build && cd build && \
-	cmake .. -DBUILD_EXAMPLES=OFF && \
-	sudo make install
-	rm -rf JetsonGPIO
+jetson-setup: deps
 
 jetson-build:
 	cd jetson/lib && make
