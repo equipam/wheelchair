@@ -8,6 +8,7 @@
 #include "Joystick.h"
 #include "Interrupt.h"
 #include "Chair.h"
+#include "Filter.h"
 
 #define FAKE_PIN_AMMONT 5
 
@@ -159,6 +160,24 @@ test(chair)
   assertEqual(pins[1], 3.3);
 }
 
+test(filter)
+{
+  Filter filter;
+  LinearCoords input, output;
+  input = {.x = 0.05, .y = 0.05};
+
+  // The first input will not be affected by the filter
+  output = filter.apply(input);
+  assertEqual(output.x, input.x);
+  assertEqual(output.y, input.y);
+
+  // The second input will have a much greater value than first (max)
+  input = {.x = 1, .y = 1};
+  output = filter.apply(input);
+  // The filter must attenuate at least 80%
+  assertLess(output.x, 0.2);
+  assertLess(output.y, 0.2);
+}
 
 void setup()
 {
