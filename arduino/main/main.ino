@@ -5,6 +5,7 @@
 #include "Joystick.h"
 #include "Chair.h"
 #include "PinInterface.h"
+#include "Filter.h"
 
 #define JOYSTICK_X_PIN A1
 #define JOYSTICK_Y_PIN A2
@@ -23,6 +24,7 @@
 
 RealPinInterface pinInterface;
 Joystick joystick(JOYSTICK_X_PIN, JOYSTICK_Y_PIN, &pinInterface);
+Filter filter;
 Interrupt haltInterrupt(INTERRUPT_PIN);
 Chair chair(CHAIR_V_PIN, CHAIR_OMEGA_PIN, &pinInterface);
 
@@ -75,6 +77,9 @@ void setup()
 void loop()
 {
     joystickPosition = joystick.position();
+    
+    joystickPosition = filter.apply(joystickPosition);
+
     sp("x = ");
     sp(joystickPosition.x);
     sp(" | y = ");
