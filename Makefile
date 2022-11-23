@@ -13,6 +13,8 @@ endif
 
 dev-setup: sym-links
 
+deps:
+
 # ---
 
 # --- Jetson Nano
