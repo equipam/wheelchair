@@ -3,6 +3,12 @@
 
 #include <Arduino.h>
 
+#include <string>
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+
+
 namespace Packets {
     struct InformationPacket
     {

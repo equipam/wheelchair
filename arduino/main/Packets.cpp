@@ -1,10 +1,39 @@
 #include "Packets.h"
 
+using namespace std;
 using namespace Packets;
 
-InformationPacket decode(String rawInput)
+InformationPacket decode(String rawInput) //CHECK - Only test version
 {
-    // TODO
+    bool a=false;
+    int b=0;
+    int c=0;
+    string text{"1;0069;0052"};
+
+    char const* psz_delimiter{";"};
+
+    char* psz_token{::std::strtok(text.data(), psz_delimiter)};
+
+    ::std::cout << psz_token << ::std::endl;
+    a =stoi(psz_token);
+    cout << "Check 1 - " << (!!a) << endl;
+    psz_token = std::strtok(nullptr, psz_delimiter);
+    
+
+    ::std::cout << psz_token << ::std::endl;
+    b =stoi(psz_token);
+    cout << "Check 2 - " << b+2 << endl;
+    psz_token = std::strtok(nullptr, psz_delimiter);
+    
+
+
+    ::std::cout << psz_token << ::std::endl;
+    c =stoi(psz_token);
+    cout << "Check 3 - " << c << endl;
+
+    return 1;
+
+
 }
 
 
