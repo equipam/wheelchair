@@ -1,10 +1,11 @@
 // Production code
 
 #include "Coordinates.h"
-#include "Interrupt.h"
 #include "Joystick.h"
 #include "Chair.h"
 #include "PinInterface.h"
+#include "SerialInterface.h"
+#include "Logging.h"
 
 #define JOYSTICK_X_PIN A1
 #define JOYSTICK_Y_PIN A2
@@ -13,71 +14,46 @@
 #define CHAIR_V_PIN A3
 #define CHAIR_OMEGA_PIN A4
 
-#if false
-  #define sp(...) Serial.print(__VA_ARGS__);
-  #define spl(...) Serial.println(__VA_ARGS__);
-#else
-  #define sp(...)
-  #define spl(...)
-#endif
+// Uncomment line below to enable logging
+// #define LOGGING
 
 RealPinInterface pinInterface;
 Joystick joystick(JOYSTICK_X_PIN, JOYSTICK_Y_PIN, &pinInterface);
-Interrupt haltInterrupt(INTERRUPT_PIN);
 Chair chair(CHAIR_V_PIN, CHAIR_OMEGA_PIN, &pinInterface);
+SerialInterface serialInterface;
 
 LinearCoords joystickPosition;
-
-void interruptFcn(){
-    chair.setHalt(pinInterface.doDigitalRead(INTERRUPT_READ_PIN));
-}
-
-void calibrate()
-{
-    Serial.write("Don't touch the joystick. Press any key");
-    while(Serial.read()==-1){}
-    joystick.calibrate_middle();
-    Serial.write("Place the joystick forward. Press any key");
-    while(Serial.read()==-1){}
-    joystick.calibrate_front();
-    Serial.write("Place the joystick back. Press any key");
-    while(Serial.read()==-1){}
-    joystick.calibrate_back();
-    Serial.write("Place the joystick left. Press any key");
-    while(Serial.read()==-1){}
-    joystick.calibrate_left();
-    Serial.write("Place the joystick right. Press any key");
-    while(Serial.read()==-1){}
-    joystick.calibrate_right();
-}
+InformationPacket incomingPacket;
 
 void setup()
 {
-    Serial.begin(9600);
-    while (!Serial)
-    {
-    }
+  Serial.begin(115200);
+  while (!Serial)
+  {
+  }
+  serialInterface.attach(Serial);
 
-    // Pin Setup
-    joystick.setup();
-    chair.setup();
+  // Pin Setup
+  joystick.setup();
+  chair.setup();
 
-    // Calibration process
-    calibrate();
+  // Calibration process
+  // joystick.calibrate();
 
-    // Interrupt Setup
-    pinMode(INTERRUPT_READ_PIN, INPUT);
-    haltInterrupt.setup(interruptFcn, CHANGE);
-
-    return;
+  return;
 }
 
 void loop()
 {
-    joystickPosition = joystick.position();
-    sp("x = ");
-    sp(joystickPosition.x);
-    sp(" | y = ");
-    spl(joystickPosition.y);
-    chair.command(joystickPosition);
+  joystickPosition = joystick.position();
+
+  incomingPacket = serialInterface.readPacket();
+
+  if (incomingPacket.overwrite)
+  {
+    joystickPosition.x = incomingPacket.x;
+    joystickPosition.y = incomingPacket.y;
+  }
+
+  chair.command(joystickPosition);
 }

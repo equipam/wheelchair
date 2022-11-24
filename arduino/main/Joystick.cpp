@@ -16,6 +16,25 @@ void Joystick::setup()
     pinMode(this->yPin, INPUT);
 }
 
+void Joystick::calibrate()
+{
+    Serial.write("Don't touch the joystick. Press any key");
+    while(Serial.read()==-1){}
+    calibrate_middle();
+    Serial.write("Place the joystick forward. Press any key");
+    while(Serial.read()==-1){}
+    calibrate_front();
+    Serial.write("Place the joystick back. Press any key");
+    while(Serial.read()==-1){}
+    calibrate_back();
+    Serial.write("Place the joystick left. Press any key");
+    while(Serial.read()==-1){}
+    calibrate_left();
+    Serial.write("Place the joystick right. Press any key");
+    while(Serial.read()==-1){}
+    calibrate_right();
+}
+
 void Joystick::calibrate_middle()
 {
     this->realBounds.midX = this->pinInterface->doAnalogRead(this->xPin);

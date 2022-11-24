@@ -6,8 +6,8 @@
 #include "Coordinates.h"
 #include "PinInterface.h"
 #include "Joystick.h"
-#include "Interrupt.h"
 #include "Chair.h"
+#include "SerialInterface.h"
 
 #define FAKE_PIN_AMMONT 5
 
@@ -122,25 +122,6 @@ test(joystick_mapping)
   assertEqual(standardizedPosition.y, expectedY);
 }
 
-// test(interrupt)
-// {
-//   clearPins();
-//   int interruptPin = 0;
-//   bool mustStop;
-//   MockPinInterface interface;
-//   Interrupt interrupt = Interrupt(interruptPin, &interface);
-
-//   // interrupt pin is high, must stop
-//   interface.doDigitalWrite(interruptPin, HIGH);
-//   mustStop = interrupt.mustStop();
-//   assertEqual(mustStop, true);
-
-//   // interrupt pin is low, must stop
-//   interface.doDigitalWrite(interruptPin, LOW);
-//   mustStop = interrupt.mustStop();
-//   assertEqual(mustStop, false);
-// }
-
 test(chair)
 {
   clearPins();
@@ -157,6 +138,40 @@ test(chair)
   // should be max voltage on both v and omega pins (3.3)
   assertEqual(pins[0], 3.3);
   assertEqual(pins[1], 3.3);
+}
+
+test(serial_interface)
+{
+  MockStream ms;
+  SerialInterface serialInterface = SerialInterface();
+
+  serialInterface.attach(&ms);
+
+  ms.input.print("0;0042;0069");
+  InformationPacket expectedPacket = {.overwrite=false, .x=42.0/1023.0, .y=69.0/1023.0};
+
+  InformationPacket result;
+  result = serialInterface.readPacket();
+  
+  assertEqual(result.overwrite, expectedPacket.overwrite);
+  assertEqual(result.x, expectedPacket.x);
+  assertEqual(result.y, expectedPacket.y);
+}
+
+test(decode)
+{
+  SerialInterface serialInterface = SerialInterface();
+
+  InformationPacket expectedPacket = {.overwrite=false, .x=42.0/1023.0, .y=69.0/1023.0};
+
+  char rawPacket[12] = "0;0042;0069";
+
+  InformationPacket result;
+  result = serialInterface.decodePacket(rawPacket);
+  
+  assertEqual(result.overwrite, expectedPacket.overwrite);
+  assertEqual(result.x, expectedPacket.x);
+  assertEqual(result.y, expectedPacket.y);
 }
 
 

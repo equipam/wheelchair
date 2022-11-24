@@ -40,6 +40,7 @@ public:
     JoystickBounds realBounds;
     Joystick(int xPin, int yPin, PinInterface* pinInterface);
     void setup();
+    void calibrate();
     void calibrate_middle();
     bool calibrate_left();
     bool calibrate_right();
