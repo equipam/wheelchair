@@ -71,10 +71,11 @@ test(joystick_calibration)
   joystick.calibrate_back();
 
   // The real bound must be saved after calibration
-  assertEqual(joystick.realBounds.minX, 0.1);
-  assertEqual(joystick.realBounds.maxX, 3.0);
-  assertEqual(joystick.realBounds.minY, 0.1);
-  assertEqual(joystick.realBounds.maxY, 3.0);
+  // Use difference to account for float imprecision...
+  assertLess(abs(joystick.realBounds.minX - 0.1), 0.00001);
+  assertLess(abs(joystick.realBounds.maxX - 3.0), 0.00001);
+  assertLess(abs(joystick.realBounds.minY - 0.1), 0.00001);
+  assertLess(abs(joystick.realBounds.maxY - 3.0), 0.00001);
 }
 
 test(joystick_position)
@@ -135,8 +136,8 @@ test(chair)
   chair.command(command);
 
   // should be max voltage on both v and omega pins (3.3)
-  assertEqual(pins[0], 3.3);
-  assertEqual(pins[1], 3.3);
+  assertLess(abs(pins[0] - 3.3), 0.00001);
+  assertLess(abs(pins[1] - 3.3), 0.00001);
 }
 
 test(serial_interface)
