@@ -84,6 +84,6 @@ arduino-test: sym-links
 arduino-invitro-test:
 	cd arduino/tests && ./compile-vitro && ./test-vitro
 
-test-local: jetson-test
+test-local: jetson-test arduino-invitro-test
 
 test: jetson-test arduino-test
