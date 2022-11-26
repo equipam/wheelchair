@@ -2,7 +2,6 @@
 
 #line 2 "tests.ino"
 #include <ArduinoUnit.h>
-#include <Stream.h>
 #include "Coordinates.h"
 #include "PinInterface.h"
 #include "Joystick.h"

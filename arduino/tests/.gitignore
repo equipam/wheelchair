@@ -1,2 +1,4 @@
 *.h
 *.cpp
+temp
+tests

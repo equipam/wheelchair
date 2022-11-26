@@ -5,8 +5,11 @@ ifeq ($(OS),Windows_NT)
 	cmd /c "for /f %F in ('dir arduino\main /b /a-d ^| findstr ".cpp .h"') do mklink /h arduino\tests\%F arduino\main\%F"
 	ECHO "Finished creating Symbolic links"
 else
+	mkdir -p arduino/tests/temp
+	mv arduino/tests/Arduino.h arduino/tests/mockVitro.cpp arduino/tests/test-vitro arduino/tests/compile-vitro arduino/tests/au2ju arduino/tests/tests.ino arduino/tests/.gitignore arduino/tests/temp
 	rm -f ./arduino/tests/*.cpp
 	rm -f ./arduino/tests/*.h
+	mv arduino/tests/temp/* arduino/tests/temp/.gitignore arduino/tests/
 	cp --symbolic-link $(PWD)/arduino/main/*.h $(PWD)/arduino/tests/
 	cp --symbolic-link $(PWD)/arduino/main/*.cpp $(PWD)/arduino/tests/
 endif
@@ -77,6 +80,9 @@ jetson-test:
 arduino-test: sym-links
 	./arduino-1.8.19/arduino --upload ./arduino/tests/tests.ino --port $(ARDUINO_PORT)
 	timeout 10s screen $(ARDUINO_PORT) 9600
+
+arduino-invitro-test:
+	cd arduino/tests && ./compile-vitro && ./test-vitro
 
 test-local: jetson-test
 
