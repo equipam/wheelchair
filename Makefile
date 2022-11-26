@@ -14,7 +14,7 @@ else
 	cp --symbolic-link $(PWD)/arduino/main/*.cpp $(PWD)/arduino/tests/
 endif
 
-dev-setup: deps sym-links
+dev-setup: deps
 
 deps:
 	sudo apt-get install -y libserial-dev
@@ -81,7 +81,7 @@ arduino-test: sym-links
 	./arduino-1.8.19/arduino --upload ./arduino/tests/tests.ino --port $(ARDUINO_PORT)
 	timeout 10s screen $(ARDUINO_PORT) 9600
 
-arduino-invitro-test:
+arduino-invitro-test: sym-links
 	cd arduino/tests && ./compile-vitro && ./test-vitro
 
 test-local: jetson-test arduino-invitro-test
