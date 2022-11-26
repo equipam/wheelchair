@@ -2,3 +2,5 @@
 *.cpp
 temp
 tests
+!mockVitro.cpp
+!Arduino.h
