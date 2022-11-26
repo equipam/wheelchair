@@ -38,7 +38,7 @@ void setup()
   chair.setup();
 
   // Calibration process
-  // joystick.calibrate();
+  // joystick.calibrate(Serial);
 
   return;
 }

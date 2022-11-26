@@ -1,5 +1,4 @@
-#include "Arduino.h"
-#include "PinInterface.h"
+#include "RealPinInterface.h"
 
 void RealPinInterface::doDigitalWrite(uint8_t pin, uint8_t val)
 {
