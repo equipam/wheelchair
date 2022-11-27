@@ -1,8 +1,9 @@
 #ifndef FILTER_H
 #define FILTER_H
 
-#include <Arduino.h>
 #include "Coordinates.h"
+#include "Arduino.h"
+
 
 /*
 struct FIRfilter

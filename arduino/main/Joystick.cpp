@@ -1,6 +1,5 @@
 #include "Joystick.h"
 
-
 Joystick::Joystick(int xPin, int yPin, PinInterface *pinInterface)
 {
     this->xPin = xPin;
@@ -14,6 +13,25 @@ void Joystick::setup()
 {
     pinMode(this->xPin, INPUT);
     pinMode(this->yPin, INPUT);
+}
+
+void Joystick::calibrate(Stream &io)
+{
+    io.write("Don't touch the joystick. Press any key");
+    while(io.read()==-1){}
+    calibrate_middle();
+    io.write("Place the joystick forward. Press any key");
+    while(io.read()==-1){}
+    calibrate_front();
+    io.write("Place the joystick back. Press any key");
+    while(io.read()==-1){}
+    calibrate_back();
+    io.write("Place the joystick left. Press any key");
+    while(io.read()==-1){}
+    calibrate_left();
+    io.write("Place the joystick right. Press any key");
+    while(io.read()==-1){}
+    calibrate_right();
 }
 
 void Joystick::calibrate_middle()
@@ -42,7 +60,7 @@ bool Joystick::calibrate_left()
     }
 
     this->realBounds.minX = realValue;
-    return;
+    return true;
 }
 
 bool Joystick::calibrate_right()
@@ -64,7 +82,7 @@ bool Joystick::calibrate_right()
         return false;
     }
     this->realBounds.maxX = realValue;
-    return;
+    return true;
 }
 
 bool Joystick::calibrate_front()
@@ -86,7 +104,7 @@ bool Joystick::calibrate_front()
         return false;
     }
     this->realBounds.maxY = realValue;
-    return;
+    return true;
 }
 
 bool Joystick::calibrate_back()
@@ -108,7 +126,7 @@ bool Joystick::calibrate_back()
         return false;
     }
     this->realBounds.minY = realValue;
-    return;
+    return true;
 }
 
 /// @brief Map the joystick coordinates to standardized range

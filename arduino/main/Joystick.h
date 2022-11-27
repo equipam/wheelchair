@@ -3,8 +3,7 @@
 
 #include "Coordinates.h"
 #include "PinInterface.h"
-#include <Stream.h>
-#include <Arduino.h>
+#include "Arduino.h"
 
 #define MIN_X 0
 #define MAX_X 5
@@ -40,6 +39,7 @@ public:
     JoystickBounds realBounds;
     Joystick(int xPin, int yPin, PinInterface* pinInterface);
     void setup();
+    void calibrate(Stream &io);
     void calibrate_middle();
     bool calibrate_left();
     bool calibrate_right();
