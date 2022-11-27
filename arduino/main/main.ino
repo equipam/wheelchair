@@ -48,7 +48,6 @@ void setup()
 void loop()
 {
   joystickPosition = joystick.position();
-  joystickPosition = filter.apply(joystickPosition);
   
   incomingPacket = serialInterface.readPacket();
 
@@ -57,6 +56,8 @@ void loop()
     joystickPosition.x = incomingPacket.x;
     joystickPosition.y = incomingPacket.y;
   }
+
+  joystickPosition = filter.apply(joystickPosition);
 
   chair.command(joystickPosition);
 }
