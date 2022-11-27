@@ -11,12 +11,53 @@
 #include <math.h>
 
 #include "HPS3DUser_IF.h"
+#include "processPointClouds.h"
+#include "processPointClouds.cpp"
+#include "render.h"
+#include "environment.h"
 
 #define DEVICE_BIND "/dev/ttyACM0"
+#define MAX_RANSAC_ITERATIONS 100
+#define RANSAC_THRESHOLD 3.0
+#define CLUSTERING_THRESHOLD 10
 
 int g_handle = -1;
 int m_handle[8] = {-1};
 static HPS3D_MeasureData_t g_measureData;
+
+static bool collisionDetected = false;
+
+pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+CameraAngle setAngle = XY;
+ProcessPointClouds<pcl::PointXYZ> *pointProcessorI = new ProcessPointClouds<pcl::PointXYZ>();
+pcl::PointCloud<pcl::PointXYZ>::Ptr inputCloudI(new pcl::PointCloud<pcl::PointXYZ>);
+
+
+void handleInterrupt(HPS3D_PointCloudData_t cloud)
+{
+
+	if (!viewer->wasStopped ())
+    {   
+		// TODO HARDCODE CLOUD WIDTH, HEIGHT AND SIZE
+        // size_t k = 0;
+		// inputCloudI->is_dense = true;
+		// inputCloudI->width = cloud.width;
+		// inputCloudI->height = cloud.height;
+		// inputCloudI->points.resize(cloud.points);
+		for (size_t i = 0; i < cloud.points; i++) {
+			//inputCloudI->push_back(pcl::PointXYZ(cloud.point_data[i].x,
+			//cloud.point_data[i].y, cloud.point_data[i].z));
+			inputCloudI->points[i].x = cloud.point_data[i].x;
+        	inputCloudI->points[i].y = cloud.point_data[i].y;
+        	inputCloudI->points[i].z = cloud.point_data[i].z;
+		}
+        viewer->removeAllPointClouds();
+        viewer->removeAllShapes();
+        cityBlock(viewer, pointProcessorI, inputCloudI);
+        viewer->spinOnce ();
+    } 
+	return;
+}
 
 static bool PrintResultData(HPS3D_EventType_t type, HPS3D_MeasureData_t data)
 {
@@ -26,48 +67,14 @@ static bool PrintResultData(HPS3D_EventType_t type, HPS3D_MeasureData_t data)
 	{
 	case HPS3D_SIMPLE_ROI_EVEN: //简单ROI数据包  不含每个点的深度数据
 		{
-			printf("*************  HPS3D_SIMPLE_ROI_EVEN  ********************\n");
-			num = data.simple_roi_data[0].roi_num;
-			int i = 0;
-			for (i = 0; i < num; i++)
-			{
-				printf("  ********GroupID:%d  ROIID:%d  *******\n", data.simple_roi_data[i].group_id, data.simple_roi_data[i].roi_id);
-				printf("    distance_average:%d\n", data.simple_roi_data[i].distance_average);
-				printf("    distance_min    :%d\n", data.simple_roi_data[i].distance_min);
-				printf("    saturation_count:%d\n", data.simple_roi_data[i].saturation_count);
-				printf("    threshold_state :%d\n", data.simple_roi_data[i].threshold_state);
-				printf("    =====================================\n\n");
-			}
-			
 			break;
 		}
 	case HPS3D_FULL_ROI_EVEN: //完整ROI数据包
 		{
-			printf("*************  HPS3D_FULL_ROI_EVEN  ********************\n");
-			num = data.full_roi_data[0].roi_num;
-			for (i = 0; i < num; i++)
-			{
-				printf("  ********GroupID:%d  ROIID:%d  *******\n", data.full_roi_data[i].group_id, data.full_roi_data[i].roi_id);
-				printf("    ROI Left Top    :(%d,%d)\n", data.full_roi_data[i].left_top_x, data.full_roi_data[i].left_top_y);
-				printf("    ROI Right Bottom:(%d,%d)\n", data.full_roi_data[i].right_bottom_x, data.full_roi_data[i].right_bottom_y);
-				printf("    ROI Pixel Number:%d\n", data.full_roi_data[i].pixel_number);
-				printf("    distance_average:%d\n", data.full_roi_data[i].distance_average);
-				printf("    distance_min    :%d\n", data.full_roi_data[i].distance_min);
-				printf("    saturation_count:%d\n", data.full_roi_data[i].saturation_count);
-				printf("    threshold_state :%d\n", data.full_roi_data[i].threshold_state);
-				printf("    =====================================\n\n");
-			}
-			
 			break;
 		}
 	case HPS3D_SIMPLE_DEPTH_EVEN: //简单深度数据包，不含每个点距离及点云数据
-		{		
-			printf("*************  HPS3D_SIMPLE_DEPTH_EVEN  ********************\n");
-			printf(" distance_average:%d\n", data.simple_depth_data.distance_average);
-			printf(" distance_min    :%d\n", data.simple_depth_data.distance_min);
-			printf(" saturation_count:%d\n", data.simple_depth_data.saturation_count);
-			printf("==========================================================\n\n");
-			
+		{	
 			break;
 		}
 	case HPS3D_FULL_DEPTH_EVEN: //完整深度图数据包，含点云数据
@@ -94,7 +101,7 @@ static bool PrintResultData(HPS3D_EventType_t type, HPS3D_MeasureData_t data)
 				data.full_depth_data.point_cloud_data.point_data[1].y, data.full_depth_data.point_cloud_data.point_data[1].z);
 			printf("Point amount: %d\n", data.full_depth_data.point_cloud_data.points);
 			
-			
+			handleInterrupt(data.full_depth_data.point_cloud_data);
 			printf("==========================================================\n\n");
 			break;
 		}
@@ -153,14 +160,13 @@ void signal_handler(int signo)
 	exit(0);
 }
 
+
 int main()
 {
-	printf("HPS3D160 C/C++ Demo (Visual Statudio 2017)\n\n");
-
-	printf("SDK Ver:%s\n", HPS3D_GetSDKVersion());
 
 	int handle = -1;
 	HPS3D_StatusTypeDef ret = HPS3D_RET_OK;
+	initCamera(setAngle, viewer);
 	do
 	{
 		//初始化内存
