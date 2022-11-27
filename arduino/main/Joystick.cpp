@@ -1,6 +1,5 @@
 #include "Joystick.h"
 
-
 Joystick::Joystick(int xPin, int yPin, PinInterface *pinInterface)
 {
     this->xPin = xPin;
@@ -16,22 +15,22 @@ void Joystick::setup()
     pinMode(this->yPin, INPUT);
 }
 
-void Joystick::calibrate()
+void Joystick::calibrate(Stream &io)
 {
-    Serial.write("Don't touch the joystick. Press any key");
-    while(Serial.read()==-1){}
+    io.write("Don't touch the joystick. Press any key");
+    while(io.read()==-1){}
     calibrate_middle();
-    Serial.write("Place the joystick forward. Press any key");
-    while(Serial.read()==-1){}
+    io.write("Place the joystick forward. Press any key");
+    while(io.read()==-1){}
     calibrate_front();
-    Serial.write("Place the joystick back. Press any key");
-    while(Serial.read()==-1){}
+    io.write("Place the joystick back. Press any key");
+    while(io.read()==-1){}
     calibrate_back();
-    Serial.write("Place the joystick left. Press any key");
-    while(Serial.read()==-1){}
+    io.write("Place the joystick left. Press any key");
+    while(io.read()==-1){}
     calibrate_left();
-    Serial.write("Place the joystick right. Press any key");
-    while(Serial.read()==-1){}
+    io.write("Place the joystick right. Press any key");
+    while(io.read()==-1){}
     calibrate_right();
 }
 
@@ -61,7 +60,7 @@ bool Joystick::calibrate_left()
     }
 
     this->realBounds.minX = realValue;
-    return;
+    return true;
 }
 
 bool Joystick::calibrate_right()
@@ -83,7 +82,7 @@ bool Joystick::calibrate_right()
         return false;
     }
     this->realBounds.maxX = realValue;
-    return;
+    return true;
 }
 
 bool Joystick::calibrate_front()
@@ -105,7 +104,7 @@ bool Joystick::calibrate_front()
         return false;
     }
     this->realBounds.maxY = realValue;
-    return;
+    return true;
 }
 
 bool Joystick::calibrate_back()
@@ -127,7 +126,7 @@ bool Joystick::calibrate_back()
         return false;
     }
     this->realBounds.minY = realValue;
-    return;
+    return true;
 }
 
 /// @brief Map the joystick coordinates to standardized range

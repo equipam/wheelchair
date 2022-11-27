@@ -1,7 +1,7 @@
 #ifndef SERIALINTERFACE_H
 #define SERIALINTERFACE_H
 
-#include <Arduino.h>
+#include "Arduino.h"
 
 #define PACKET_SIZE 11
 
