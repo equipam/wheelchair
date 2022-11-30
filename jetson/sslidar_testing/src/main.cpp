@@ -16,10 +16,12 @@
 #include "render.h"
 #include "environment.h"
 
+#include <pthread.h>
+
 #define DEVICE_BIND "/dev/ttyACM0"
-#define MAX_RANSAC_ITERATIONS 100
-#define RANSAC_THRESHOLD 3.0
-#define CLUSTERING_THRESHOLD 10
+#define MAX_RANSAC_ITERATIONS 50
+#define RANSAC_THRESHOLD 10.0
+#define CLUSTERING_THRESHOLD 100
 
 int g_handle = -1;
 int m_handle[8] = {-1};
@@ -31,31 +33,29 @@ pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisual
 CameraAngle setAngle = XY;
 ProcessPointClouds<pcl::PointXYZ> *pointProcessorI = new ProcessPointClouds<pcl::PointXYZ>();
 pcl::PointCloud<pcl::PointXYZ>::Ptr inputCloudI(new pcl::PointCloud<pcl::PointXYZ>);
+std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> pair_cloud;
+std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> cloudClusters;
 
+void* processPoints(void* args)
+{
+	while (1)
+	{
+		std::cout << "start ransac" << std::endl;
+    	pair_cloud = pointProcessorI->myRansacPlane(inputCloudI, 50, 200);
+		std::cout << "end ransac" << std::endl;
+		std::cout << "start clustering" << std::endl;
+    	cloudClusters = pointProcessorI->myeuclideanCluster(pair_cloud.second, 0.5, 50, 500);
+		std::cout << "end clustering" << std::endl;
+	}
+}
 
 void handleInterrupt(HPS3D_PointCloudData_t cloud)
 {
-
-	if (!viewer->wasStopped ())
-    {   
-		// TODO HARDCODE CLOUD WIDTH, HEIGHT AND SIZE
-        // size_t k = 0;
-		// inputCloudI->is_dense = true;
-		// inputCloudI->width = cloud.width;
-		// inputCloudI->height = cloud.height;
-		// inputCloudI->points.resize(cloud.points);
-		for (size_t i = 0; i < cloud.points; i++) {
-			//inputCloudI->push_back(pcl::PointXYZ(cloud.point_data[i].x,
-			//cloud.point_data[i].y, cloud.point_data[i].z));
-			inputCloudI->points[i].x = cloud.point_data[i].x;
-        	inputCloudI->points[i].y = cloud.point_data[i].y;
-        	inputCloudI->points[i].z = cloud.point_data[i].z;
-		}
-        viewer->removeAllPointClouds();
-        viewer->removeAllShapes();
-        cityBlock(viewer, pointProcessorI, inputCloudI);
-        viewer->spinOnce ();
-    } 
+	for (size_t i = 0; i < cloud.points; i++) {
+		inputCloudI->points[i].x = cloud.point_data[i].x;
+		inputCloudI->points[i].y = cloud.point_data[i].y;
+		inputCloudI->points[i].z = cloud.point_data[i].z;
+	}
 	return;
 }
 
@@ -79,18 +79,18 @@ static bool PrintResultData(HPS3D_EventType_t type, HPS3D_MeasureData_t data)
 		}
 	case HPS3D_FULL_DEPTH_EVEN: //完整深度图数据包，含点云数据
 		{
-			printf("*************  HPS3D_FULL_DEPTH_EVEN    ********************\n");
+			/*printf("*************  HPS3D_FULL_DEPTH_EVEN    ********************\n");
 			printf("distance_average:%d\n", data.full_depth_data.distance_average);
 			printf("distance_min    :%d\n", data.full_depth_data.distance_min);
 			printf("saturation_count:%d\n", data.full_depth_data.saturation_count);
 
 
-			/*for (size_t i = 0; i < data.full_depth_data.point_cloud_data.points; i++)
+			for (size_t i = 0; i < data.full_depth_data.point_cloud_data.points; i++)
 			{
 				printf("distance[%d]     :%d\n", i, data.full_depth_data.distance[i]);
 				printf("pointCloud[%d]   :(%f,%f.%f)\n", i, data.full_depth_data.point_cloud_data.point_data[i].x,
 				data.full_depth_data.point_cloud_data.point_data[i].y, data.full_depth_data.point_cloud_data.point_data[i].z);
-			}*/
+			}
 			
 			printf("distance[0]     :%d\n", data.full_depth_data.distance[0]);
 			printf("pointCloud[0]   :(%f,%f.%f)\n", data.full_depth_data.point_cloud_data.point_data[0].x,
@@ -100,9 +100,12 @@ static bool PrintResultData(HPS3D_EventType_t type, HPS3D_MeasureData_t data)
 			printf("pointCloud[1]   :(%f,%f.%f)\n", data.full_depth_data.point_cloud_data.point_data[1].x,
 				data.full_depth_data.point_cloud_data.point_data[1].y, data.full_depth_data.point_cloud_data.point_data[1].z);
 			printf("Point amount: %d\n", data.full_depth_data.point_cloud_data.points);
+			printf("width: %d\n", data.full_depth_data.point_cloud_data.width);
+			printf("height: %d\n",
+			data.full_depth_data.point_cloud_data.height);*/
 			
 			handleInterrupt(data.full_depth_data.point_cloud_data);
-			printf("==========================================================\n\n");
+			// printf("==========================================================\n\n");
 			break;
 		}
 	default:
@@ -167,6 +170,24 @@ int main()
 	int handle = -1;
 	HPS3D_StatusTypeDef ret = HPS3D_RET_OK;
 	initCamera(setAngle, viewer);
+
+	pthread_t thread_id;
+
+	inputCloudI->is_dense = true;
+	inputCloudI->width = 160;
+	inputCloudI->height = 60;
+	inputCloudI->points.resize(160*60);
+    for (size_t i = 0; i < 60; i++) {
+		for (size_t j = 0; j < 160; j++)
+		{
+        	inputCloudI->points[i].x = i;
+			inputCloudI->points[i].y = j;
+			inputCloudI->points[i].z = 0;
+		}	
+    }
+	pointProcessorI->numPoints(inputCloudI);
+	pthread_create(&thread_id, NULL, processPoints, NULL);
+
 	do
 	{
 		//初始化内存
@@ -218,6 +239,7 @@ int main()
 		bool isContinuous = false;
 		int count = 0;
 		HPS3D_StartCapture(handle);
+		size_t clusterID;
 		do
 		{
 			if (isReconnect)
@@ -231,13 +253,29 @@ int main()
 					isReconnect = false;
 				}
 			}
-			sleep(1);
-						
+			if (!viewer->wasStopped ())
+			{   
+				viewer->removeAllPointClouds();
+				viewer->removeAllShapes();
+				renderPointCloud(viewer, inputCloudI, "obstacle_road", Color(0,1,0));
+				/*renderPointCloud(viewer, pair_cloud.first, "obstacle_cloud", Color(1,0,0));
+				renderPointCloud(viewer, pair_cloud.second, "obstacle_road", Color(0,1,0));
+
+				clusterID = 1;
+				for(pcl::PointCloud<pcl::PointXYZ>::Ptr cluster: cloudClusters) {
+					std::cout << "cluster size";
+					pointProcessorI->numPoints(cluster);
+					renderPointCloud(viewer, cluster, "obstacle_cloud"+std::to_string(clusterID), Color(0,0,1));
+					clusterID++;
+				}*/
+				viewer->spinOnce ();
+			}
 		} while (1);
 
 
 	} while (0);
 
+	pthread_join(thread_id, NULL);
 	HPS3D_StopCapture(handle);
 	HPS3D_CloseDevice(handle);
 	HPS3D_MeasureDataFree(&g_measureData);

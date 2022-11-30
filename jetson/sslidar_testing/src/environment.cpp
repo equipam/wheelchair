@@ -9,19 +9,17 @@
 #include "HPS3DUser_IF.h"
 
 
-void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessPointClouds<pcl::PointXYZ> *pointProcessorI, const pcl::PointCloud<pcl::PointXYZ>::Ptr &inputCloud) {
+void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer, std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> pair_cloud, std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> cloudClusters) {
     
     // pcl::PointCloud<pcl::PointXYZI>::Ptr filterCloud = pointProcessorI->FilterCloud(inputCloud, 0.2f, Eigen::Vector4f (-10, -5, -2, 1), Eigen::Vector4f (25, 7, 2, 1));
     // pcl::PointCloud<pcl::PointXYZI>::Ptr filterCloud = pointProcessorI->FilterCloud(inputCloud, 0.3, Eigen::Vector4f (-20, -6, -3, 1), Eigen::Vector4f (30, 7, 2, 1));
 
-    renderPointCloud(viewer,inputCloud,"inputCloud");
+    //renderPointCloud(viewer,inputCloud,"inputCloud");
 
-    // std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> pair_cloud = pointProcessorI->SegmentPlane(filterCloud, 100, 0.2);
-    std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> pair_cloud = pointProcessorI->myRansacPlane(inputCloud, 100, 0.2);
-
-    //std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> cloudClusters = pointProcessorI->Clustering(pair_cloud.first, 0.5, 50, 500);
-    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> cloudClusters = pointProcessorI->myeuclideanCluster(pair_cloud.first, 0.5, 50, 500);
-
+    // std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr,
+    // pcl::PointCloud<pcl::PointXYZI>::Ptr> pair_cloud =
+    // pointProcessorI->SegmentPlane(filterCloud, 100, 0.2);
+    
     renderPointCloud(viewer, pair_cloud.first, "obstacle_cloud", Color(1,0,0));
     renderPointCloud(viewer, pair_cloud.second, "obstacle_road", Color(0,1,0));
 
@@ -29,12 +27,11 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer, ProcessPointCloud
     std::vector<Color> colors{Color(1,0,0), Color(0,1,0), Color(0,0,1)};
     for(pcl::PointCloud<pcl::PointXYZ>::Ptr cluster: cloudClusters) {
         std::cout << "cluster size";
-        pointProcessorI->numPoints(cluster);
-        renderPointCloud(viewer, cluster, "obstacle_cloud"+std::to_string(clusterID), colors[clusterID]);
-
-        Box box = pointProcessorI->BoundingBox(cluster);
-        renderBox(viewer, box, clusterID);
-        ++clusterID;
+        //pointProcessorI->numPoints(cluster);
+        renderPointCloud(viewer, cluster, "obstacle_cloud", Color(0,0,1));
+        //Box box = pointProcessorI->BoundingBox(cluster);
+        //renderBox(viewer, box, clusterID);
+        //++clusterID;
     }
 }
 
@@ -46,7 +43,7 @@ void initCamera(CameraAngle setAngle, pcl::visualization::PCLVisualizer::Ptr& vi
     
     // set camera position and angle
     viewer->initCameraParameters();
-    // distance away in meters
+    // distance away in meters3
     int distance = 16;
     
     switch(setAngle)
