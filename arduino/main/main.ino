@@ -11,8 +11,8 @@
 #define JOYSTICK_Y_PIN A2
 #define INTERRUPT_PIN 2
 #define INTERRUPT_READ_PIN 3
-#define CHAIR_V_PIN A3
-#define CHAIR_OMEGA_PIN A4
+#define CHAIR_V_PIN 5
+#define CHAIR_OMEGA_PIN 6
 
 // Uncomment line below to enable logging
 // #define LOGGING
@@ -54,6 +54,9 @@ void loop()
     joystickPosition.x = incomingPacket.x;
     joystickPosition.y = incomingPacket.y;
   }
+
+  joystickPosition.x *= -0.8;
+  joystickPosition.y *= -0.8;
 
   chair.command(joystickPosition);
 }

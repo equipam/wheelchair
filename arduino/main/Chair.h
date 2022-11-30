@@ -28,6 +28,7 @@ public:
     void setup();
     void command(LinearCoords coords);
     void setHalt(bool state);
+    float safetyBounds(float input);
 };
 
 #endif
