@@ -29,6 +29,17 @@ void Chair::setup()
 //     }
 // }
 
+float Chair::safetyBounds(float input)
+{
+    float biased = input - 0.06;
+    if (biased > 2.0)
+        return 2.0;
+    if (biased < 1.2)
+        return 1.2;
+    return biased;
+}
+
+
 /// @brief Sends a V and Omega command to the chair DB9
 /// @param coords Normalized polar coordinates
 void Chair::command(LinearCoords coords)
@@ -45,12 +56,15 @@ void Chair::command(LinearCoords coords)
     // Use this to dance :)
     // this->handleHalt(coords)
 
-    float mappedX = Coordinates::map(coords.x, STANDARDIZED_V_MIN, STANDARDIZED_V_MAX, OUTPUT_V_MIN, OUTPUT_V_MAX);
-    float mappedY = Coordinates::map(coords.y, STANDARDIZED_OMEGA_MIN, STANDARDIZED_OMEGA_MAX, OUTPUT_OMEGA_MIN, OUTPUT_OMEGA_MAX);
+    float mappedX = Coordinates::map(command.x, STANDARDIZED_V_MIN, STANDARDIZED_V_MAX, OUTPUT_V_MIN, OUTPUT_V_MAX);
+    float mappedY = Coordinates::map(command.y, STANDARDIZED_OMEGA_MIN, STANDARDIZED_OMEGA_MAX, OUTPUT_OMEGA_MIN, OUTPUT_OMEGA_MAX);
+
+    float finalX = this->safetyBounds(mappedX);
+    float finalY = this->safetyBounds(mappedY);
 
     // Pass command to chair
-    this->pinInterface->doAnalogWrite(this->vPin, mappedX);
-    this->pinInterface->doAnalogWrite(this->omegaPin, mappedY);
+    this->pinInterface->doAnalogWrite(this->vPin, finalX);
+    this->pinInterface->doAnalogWrite(this->omegaPin, finalY);
     return;
 }
 

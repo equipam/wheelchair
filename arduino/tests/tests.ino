@@ -135,9 +135,9 @@ test(chair)
 
   chair.command(command);
 
-  // should be max voltage on both v and omega pins (3.3)
-  assertLess(abs(pins[0] - 3.3), 0.00001);
-  assertLess(abs(pins[1] - 3.3), 0.00001);
+  // should be max voltage on both v and omega pins (2.0)
+  assertLess(abs(pins[0] - 2.0), 0.00001);
+  assertLess(abs(pins[1] - 2.0), 0.00001);
 }
 
 test(serial_interface)
