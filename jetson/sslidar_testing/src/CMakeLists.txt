@@ -10,7 +10,7 @@ set(SSLIDAR_LIBRARIES "-lpthread")
 
 project(playback)
 
-find_package(PCL 1.12 REQUIRED COMPONENTS common io visualization)
+find_package(PCL 1.12 REQUIRED COMPONENTS common io visualization segmentation sample_consensus search features filters)
 
 include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})

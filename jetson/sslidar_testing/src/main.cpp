@@ -10,6 +10,20 @@
 #include <stdarg.h>
 #include <math.h>
 
+
+#include <pcl/ModelCoefficients.h>
+#include <pcl/point_types.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/filters/extract_indices.h>
+#include <pcl/filters/voxel_grid.h>
+#include <pcl/features/normal_3d.h>
+#include <pcl/search/kdtree.h>
+#include <pcl/sample_consensus/method_types.h>
+#include <pcl/sample_consensus/model_types.h>
+#include <pcl/segmentation/sac_segmentation.h>
+#include <pcl/segmentation/extract_clusters.h>
+ 
+
 #include "HPS3DUser_IF.h"
 #include "processPointClouds.h"
 #include "processPointClouds.cpp"
@@ -27,6 +41,8 @@ int g_handle = -1;
 int m_handle[8] = {-1};
 static HPS3D_MeasureData_t g_measureData;
 
+pthread_mutex_t lock;
+
 static bool collisionDetected = false;
 
 pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
@@ -36,26 +52,89 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr inputCloudI(new pcl::PointCloud<pcl::PointXY
 std::pair<pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr> pair_cloud;
 std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> cloudClusters;
 
+/*pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
+pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
+std::vector<pcl::PointIndices> cluster_indices;
+pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
+
 void* processPoints(void* args)
 {
 	while (1)
 	{
-		std::cout << "start ransac" << std::endl;
-    	pair_cloud = pointProcessorI->myRansacPlane(inputCloudI, 50, 200);
-		std::cout << "end ransac" << std::endl;
-		std::cout << "start clustering" << std::endl;
-    	cloudClusters = pointProcessorI->myeuclideanCluster(pair_cloud.second, 0.5, 50, 500);
-		std::cout << "end clustering" << std::endl;
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_f (new pcl::PointCloud<pcl::PointXYZ>);
+		std::cout << "PointCloud before filtering has: " << inputCloudI->size () << " data points." << std::endl; //*
+		
+		// Create the filtering object: downsample the dataset using a leaf size of 1cm
+		pcl::VoxelGrid<pcl::PointXYZ> vg;
+		
+		vg.setInputCloud (inputCloudI);
+		vg.setLeafSize (0.01f, 0.01f, 0.01f);
+		vg.filter (*cloud_filtered);
+		std::cout << "PointCloud after filtering has: " << cloud_filtered->size ()  << " data points." << std::endl; //*
+		
+		// Create the segmentation object for the planar model and set all the parameters
+		pcl::SACSegmentation<pcl::PointXYZ> seg;
+		pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
+		pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_plane (new pcl::PointCloud<pcl::PointXYZ> ());
+		seg.setOptimizeCoefficients (true);
+		seg.setModelType (pcl::SACMODEL_PLANE);
+		seg.setMethodType (pcl::SAC_RANSAC);
+		seg.setMaxIterations (100);
+		seg.setDistanceThreshold (0.02); // 2cm
+		
+		int nr_points = (int) cloud_filtered->size ();
+		while (cloud_filtered->size () > 0.3 * nr_points)
+		{
+			// Segment the largest planar component from the remaining cloud
+			seg.setInputCloud (cloud_filtered);
+			seg.segment (*inliers, *coefficients);
+			if (inliers->indices.size () == 0)
+			{
+			std::cout << "Could not estimate a planar model for the given dataset." << std::endl;
+			break;
+			}
+		
+			// Extract the planar inliers from the input cloud
+			pcl::ExtractIndices<pcl::PointXYZ> extract;
+			extract.setInputCloud (cloud_filtered);
+			extract.setIndices (inliers);
+			extract.setNegative (false);
+		
+			// Get the points associated with the planar surface
+			extract.filter (*cloud_plane);
+			std::cout << "PointCloud representing the planar component: " << cloud_plane->size () << " data points." << std::endl;
+		
+			// Remove the planar inliers, extract the rest
+			extract.setNegative (true);
+			extract.filter (*cloud_f);
+			*cloud_filtered = *cloud_f;
+		}
+		
+		// Creating the KdTree object for the search method of the extraction
+		pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
+		tree->setInputCloud (cloud_filtered);
+		
+		
+		pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
+		ec.setClusterTolerance (0.05); // 5cm
+		ec.setMinClusterSize (100);
+		ec.setMaxClusterSize (9600/4);
+		ec.setSearchMethod (tree);
+		ec.setInputCloud (cloud_filtered);
+		ec.extract (cluster_indices);
 	}
 }
-
+*/
 void handleInterrupt(HPS3D_PointCloudData_t cloud)
 {
+	pthread_mutex_lock(&lock);
 	for (size_t i = 0; i < cloud.points; i++) {
 		inputCloudI->points[i].x = cloud.point_data[i].x;
 		inputCloudI->points[i].y = cloud.point_data[i].y;
 		inputCloudI->points[i].z = cloud.point_data[i].z;
 	}
+	pthread_mutex_unlock(&lock);
 	return;
 }
 
@@ -166,7 +245,10 @@ void signal_handler(int signo)
 
 int main()
 {
-
+    if (pthread_mutex_init(&lock, NULL) != 0) {
+        printf("\n mutex init has failed\n");
+        return 1;
+    }
 	int handle = -1;
 	HPS3D_StatusTypeDef ret = HPS3D_RET_OK;
 	initCamera(setAngle, viewer);
@@ -186,7 +268,7 @@ int main()
 		}	
     }
 	pointProcessorI->numPoints(inputCloudI);
-	pthread_create(&thread_id, NULL, processPoints, NULL);
+	//pthread_create(&thread_id, NULL, processPoints, NULL);
 
 	do
 	{
@@ -235,7 +317,7 @@ int main()
 		printf("支持最大多机编号为:%d，当前设备多机编号:%d\n", settings.max_multiCamera_code, settings.cur_multiCamera_code);
 		printf("当前设备用户ID为：%d\n", settings.user_id);
 		printf("光路补偿是否开启: %d\n\n", settings.optical_path_calibration);
-
+		srand(69);
 		bool isContinuous = false;
 		int count = 0;
 		HPS3D_StartCapture(handle);
@@ -257,29 +339,108 @@ int main()
 			{   
 				viewer->removeAllPointClouds();
 				viewer->removeAllShapes();
-				renderPointCloud(viewer, inputCloudI, "obstacle_road", Color(0,1,0));
-				/*renderPointCloud(viewer, pair_cloud.first, "obstacle_cloud", Color(1,0,0));
-				renderPointCloud(viewer, pair_cloud.second, "obstacle_road", Color(0,1,0));
+				pthread_mutex_lock(&lock);
+				// renderPointCloud(viewer, inputCloudI, "obstacle_road", Color(0,1,0));
+				//renderPointCloud(viewer, pair_cloud.first, "obstacle_cloud", Color(1,0,0));
 
+				//
+				std::vector<pcl::PointIndices> cluster_indices;
+				pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
+
+				pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_f (new pcl::PointCloud<pcl::PointXYZ>);
+				std::cout << "PointCloud before filtering has: " << inputCloudI->size () << " data points." << std::endl; //*
+				
+				// Create the filtering object: downsample the dataset using a leaf size of 1cm
+				pcl::VoxelGrid<pcl::PointXYZ> vg;
+				
+				vg.setInputCloud (inputCloudI);
+				vg.setLeafSize(10.0f, 10.0f, 10.0f);
+				vg.filter (*cloud_filtered);
+				pthread_mutex_unlock(&lock);
+				std::cout << "PointCloud after filtering has: " << cloud_filtered->size ()  << " data points." << std::endl; //*
+				
+				// Create the segmentation object for the planar model and set all the parameters
+				pcl::SACSegmentation<pcl::PointXYZ> seg;
+				pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
+				pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
+				pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_plane (new pcl::PointCloud<pcl::PointXYZ> ());
+				seg.setOptimizeCoefficients (true);
+				seg.setModelType (pcl::SACMODEL_PLANE);
+				seg.setMethodType (pcl::SAC_RANSAC);
+				seg.setMaxIterations (200);
+				seg.setDistanceThreshold (100); // 10cm
+				
+				int nr_points = (int) cloud_filtered->size ();
+				while (cloud_filtered->size () > 0.9 * nr_points)
+				{
+					// Segment the largest planar component from the remaining cloud
+					seg.setInputCloud (cloud_filtered);
+					seg.segment (*inliers, *coefficients);
+					if (inliers->indices.size () == 0)
+					{
+					std::cout << "Could not estimate a planar model for the given dataset." << std::endl;
+					break;
+					}
+				
+					// Extract the planar inliers from the input cloud
+					pcl::ExtractIndices<pcl::PointXYZ> extract;
+					extract.setInputCloud (cloud_filtered);
+					extract.setIndices (inliers);
+					extract.setNegative (false);
+				
+					// Get the points associated with the planar surface
+					extract.filter (*cloud_plane);
+					std::cout << "PointCloud representing the planar component: " << cloud_plane->size () << " data points." << std::endl;
+				
+					// Remove the planar inliers, extract the rest
+					extract.setNegative (true);
+					extract.filter (*cloud_f);
+					*cloud_filtered = *cloud_f;
+				}
+				renderPointCloud(viewer, cloud_plane, "plane", Color(0,1,0));
+				// Creating the KdTree object for the search method of the extraction
+				pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
+				tree->setInputCloud (cloud_filtered);
+				
+				
+				pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
+				ec.setClusterTolerance (40); // 5cm
+				ec.setMinClusterSize (50);
+				ec.setMaxClusterSize (8000);
+				ec.setSearchMethod (tree);
+				ec.setInputCloud (cloud_filtered);
+				ec.extract (cluster_indices);
 				clusterID = 1;
-				for(pcl::PointCloud<pcl::PointXYZ>::Ptr cluster: cloudClusters) {
+				for (const auto& cluster : cluster_indices)
+				{
+					pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
+					for (const auto& idx : cluster.indices) {
+						cloud_cluster->push_back((*cloud_filtered)[idx]);
+					} //*
+					cloud_cluster->width = cloud_cluster->size ();
+					cloud_cluster->height = 1;
+					cloud_cluster->is_dense = true;
+					renderPointCloud(viewer, cloud_cluster, "obstacle_cloud"+std::to_string(clusterID), Color(0,0,1));
+					clusterID++;
+				}
+				std::cout << "Found: " << clusterID  << " clusters." << std::endl; //*
+				/*for(pcl::PointCloud<pcl::PointXYZ>::Ptr cluster: cloudClusters) {
 					std::cout << "cluster size";
 					pointProcessorI->numPoints(cluster);
 					renderPointCloud(viewer, cluster, "obstacle_cloud"+std::to_string(clusterID), Color(0,0,1));
 					clusterID++;
 				}*/
+				//pthread_mutex_unlock(&lock);
+
 				viewer->spinOnce ();
 			}
 		} while (1);
-
-
 	} while (0);
 
-	pthread_join(thread_id, NULL);
+	//pthread_join(thread_id, NULL);
+	pthread_mutex_destroy(&lock);
 	HPS3D_StopCapture(handle);
 	HPS3D_CloseDevice(handle);
 	HPS3D_MeasureDataFree(&g_measureData);
 	system("pause");
 }
-
-
