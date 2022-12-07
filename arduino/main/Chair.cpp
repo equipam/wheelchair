@@ -1,9 +1,10 @@
 #include "Chair.h"
 
-Chair::Chair(int vPin, int omegaPin, PinInterface *pinInterface)
+Chair::Chair(int vPin, int omegaPin, int switchPin, PinInterface *pinInterface)
 {
     this->vPin = vPin;
     this->omegaPin = omegaPin;
+    this->switchPin = switchPin;
     this->pinInterface = pinInterface;
     return;
 }
@@ -13,6 +14,23 @@ void Chair::setup()
 {
     pinMode(this->vPin, OUTPUT);
     pinMode(this->omegaPin, OUTPUT);
+    pinMode(this->switchPin, INPUT);
+}
+
+
+void Chair::changeSpeed()
+{
+    int result = this->pinInterface->doDigitalRead(this->switchPin);
+
+    if(result && !this->lastSwitchState)
+    {
+        this->currentSpeed++;
+        if(this->currentSpeed >= SPEEDS)
+        {
+            this->currentSpeed = 0;
+        }
+    }
+    this->lastSwitchState = result;
 }
 
 // void Chair::handleHalt(PolarCoords coords)
@@ -55,13 +73,29 @@ void Chair::command(LinearCoords coords)
 
     // Use this to dance :)
     // this->handleHalt(coords)
+    /*float outputVDelta = OUTPUT_V_MAX - OUTPUT_V_MIN;
+    float avgOutputV = (OUTPUT_V_MAX + OUTPUT_V_MIN) / 2;
+    float output_v_min = avgOutputV - outputVDelta/2 * this->speeds[this->currentSpeed];
+    float output_v_max = avgOutputV + outputVDelta/2 * this->speeds[this->currentSpeed];
 
+    float outputOmegaDelta = OUTPUT_V_MAX - OUTPUT_V_MIN;
+    float avgOutputOmega = (OUTPUT_V_MAX + OUTPUT_V_MIN) / 2;
+    float output_omega_min = avgOutputOmega - outputOmegaDelta/2 * this->speeds[this->currentSpeed];
+    float output_omega_max = avgOutputOmega + outputOmegaDelta/2 * this->speeds[this->currentSpeed];
+
+    float mappedX = Coordinates::map(command.x, STANDARDIZED_V_MIN, STANDARDIZED_V_MAX, output_v_min, output_v_max);
+    float mappedY = Coordinates::map(command.y, STANDARDIZED_OMEGA_MIN,
+    STANDARDIZED_OMEGA_MAX, output_omega_min, output_omega_max);*/
+
+    command.x = command.x * this->speeds[this->currentSpeed];
+    command.y = command.y * this->speeds[this->currentSpeed];
+    
     float mappedX = Coordinates::map(command.x, STANDARDIZED_V_MIN, STANDARDIZED_V_MAX, OUTPUT_V_MIN, OUTPUT_V_MAX);
     float mappedY = Coordinates::map(command.y, STANDARDIZED_OMEGA_MIN, STANDARDIZED_OMEGA_MAX, OUTPUT_OMEGA_MIN, OUTPUT_OMEGA_MAX);
 
     float finalX = this->safetyBounds(mappedX);
     float finalY = this->safetyBounds(mappedY);
-
+    
     // Pass command to chair
     this->pinInterface->doAnalogWrite(this->vPin, finalX);
     this->pinInterface->doAnalogWrite(this->omegaPin, finalY);

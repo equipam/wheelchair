@@ -354,7 +354,7 @@ int main()
 				pcl::VoxelGrid<pcl::PointXYZ> vg;
 				
 				vg.setInputCloud (inputCloudI);
-				vg.setLeafSize(10.0f, 10.0f, 10.0f);
+				vg.setLeafSize(5.0f, 5.0f, 5.0f); // ! COISA A MUDAR
 				vg.filter (*cloud_filtered);
 				pthread_mutex_unlock(&lock);
 				std::cout << "PointCloud after filtering has: " << cloud_filtered->size ()  << " data points." << std::endl; //*
@@ -367,36 +367,37 @@ int main()
 				seg.setOptimizeCoefficients (true);
 				seg.setModelType (pcl::SACMODEL_PLANE);
 				seg.setMethodType (pcl::SAC_RANSAC);
-				seg.setMaxIterations (200);
-				seg.setDistanceThreshold (100); // 10cm
+				seg.setMaxIterations (400);
+				seg.setDistanceThreshold (100); // 10cm // ! COISA A MUDAR
 				
 				int nr_points = (int) cloud_filtered->size ();
-				while (cloud_filtered->size () > 0.9 * nr_points)
+				
+				/*while (cloud_filtered->size () > 0.99 * nr_points)
+				{*/
+				// Segment the largest planar component from the remaining cloud
+				seg.setInputCloud (cloud_filtered);
+				seg.segment (*inliers, *coefficients);
+				if (inliers->indices.size () == 0)
 				{
-					// Segment the largest planar component from the remaining cloud
-					seg.setInputCloud (cloud_filtered);
-					seg.segment (*inliers, *coefficients);
-					if (inliers->indices.size () == 0)
-					{
-					std::cout << "Could not estimate a planar model for the given dataset." << std::endl;
-					break;
-					}
-				
-					// Extract the planar inliers from the input cloud
-					pcl::ExtractIndices<pcl::PointXYZ> extract;
-					extract.setInputCloud (cloud_filtered);
-					extract.setIndices (inliers);
-					extract.setNegative (false);
-				
-					// Get the points associated with the planar surface
-					extract.filter (*cloud_plane);
-					std::cout << "PointCloud representing the planar component: " << cloud_plane->size () << " data points." << std::endl;
-				
-					// Remove the planar inliers, extract the rest
-					extract.setNegative (true);
-					extract.filter (*cloud_f);
-					*cloud_filtered = *cloud_f;
+				std::cout << "Could not estimate a planar model for the given dataset." << std::endl;
+				break;
 				}
+			
+				// Extract the planar inliers from the input cloud
+				pcl::ExtractIndices<pcl::PointXYZ> extract;
+				extract.setInputCloud (cloud_filtered);
+				extract.setIndices (inliers);
+				extract.setNegative (false);
+			
+				// Get the points associated with the planar surface
+				extract.filter (*cloud_plane);
+				std::cout << "PointCloud representing the planar component: " << cloud_plane->size () << " data points." << std::endl;
+			
+				// Remove the planar inliers, extract the rest
+				extract.setNegative (true);
+				extract.filter (*cloud_f);
+				*cloud_filtered = *cloud_f;
+				/*}*/
 				renderPointCloud(viewer, cloud_plane, "plane", Color(0,1,0));
 				// Creating the KdTree object for the search method of the extraction
 				pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
@@ -404,8 +405,8 @@ int main()
 				
 				
 				pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-				ec.setClusterTolerance (40); // 5cm
-				ec.setMinClusterSize (50);
+				ec.setClusterTolerance (70); // 5cm // ! COISA A MUDAR
+				ec.setMinClusterSize (20);
 				ec.setMaxClusterSize (8000);
 				ec.setSearchMethod (tree);
 				ec.setInputCloud (cloud_filtered);

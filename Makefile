@@ -9,9 +9,13 @@ else
 	mv arduino/tests/Arduino.h arduino/tests/mockVitro.cpp arduino/tests/test-vitro arduino/tests/compile-vitro arduino/tests/au2ju arduino/tests/tests.ino arduino/tests/.gitignore arduino/tests/temp
 	rm -f ./arduino/tests/*.cpp
 	rm -f ./arduino/tests/*.h
+	rm -f ./arduino/playground/*.cpp
+	rm -f ./arduino/playground/*.h
 	mv arduino/tests/temp/* arduino/tests/temp/.gitignore arduino/tests/
 	cp --symbolic-link $(PWD)/arduino/main/*.h $(PWD)/arduino/tests/
 	cp --symbolic-link $(PWD)/arduino/main/*.cpp $(PWD)/arduino/tests/
+	cp --symbolic-link $(PWD)/arduino/main/*.h $(PWD)/arduino/playground/
+	cp --symbolic-link $(PWD)/arduino/main/*.cpp $(PWD)/arduino/playground/
 endif
 
 dev-setup: deps
