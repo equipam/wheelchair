@@ -127,17 +127,36 @@ test(chair)
   clearPins();
   uint8_t vPin = 0;
   uint8_t omegaPin = 1;
+  uint8_t switchPin = 2;
   MockPinInterface interface;
 
-  Chair chair = Chair(vPin, omegaPin, &interface);
+  Chair chair = Chair(vPin, omegaPin, switchPin, &interface);
   // command the max speed at max angle
   LinearCoords command = {.x = STANDARDIZED_V_MAX, .y = STANDARDIZED_OMEGA_MAX};
-
+  chair.currentSpeed = 2;
   chair.command(command);
 
   // should be max voltage on both v and omega pins (2.0)
   assertLess(abs(pins[0] - 2.0), 0.00001);
   assertLess(abs(pins[1] - 2.0), 0.00001);
+}
+
+test(change_speed)
+{
+  clearPins();
+  uint8_t vPin = 0;
+  uint8_t omegaPin = 1;
+  uint8_t switchPin = 2;
+  MockPinInterface interface;
+
+  Chair chair = Chair(vPin, omegaPin, switchPin, &interface);
+
+  assertEqual(chair.currentSpeed, 0);
+
+  interface.doDigitalWrite(switchPin, 0);
+  chair.changeSpeed();
+
+  assertEqual(chair.currentSpeed, 1);
 }
 
 test(serial_interface)

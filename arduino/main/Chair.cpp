@@ -1,9 +1,11 @@
 #include "Chair.h"
+#include "Logging.h"
 
-Chair::Chair(int vPin, int omegaPin, PinInterface *pinInterface)
+Chair::Chair(int vPin, int omegaPin, int switchPin, PinInterface *pinInterface)
 {
     this->vPin = vPin;
     this->omegaPin = omegaPin;
+    this->switchPin = switchPin;
     this->pinInterface = pinInterface;
     return;
 }
@@ -13,6 +15,24 @@ void Chair::setup()
 {
     pinMode(this->vPin, OUTPUT);
     pinMode(this->omegaPin, OUTPUT);
+    pinMode(this->switchPin, INPUT_PULLUP);
+}
+
+
+void Chair::changeSpeed()
+{
+    // The pin is 1 when the switch is off, hence the "not"
+    int result = !this->pinInterface->doDigitalRead(this->switchPin);
+
+    if(result && !this->lastSwitchState)
+    {
+        this->currentSpeed++;
+        if(this->currentSpeed >= SPEEDS)
+        {
+            this->currentSpeed = 0;
+        }
+    }
+    this->lastSwitchState = result;
 }
 
 // void Chair::handleHalt(PolarCoords coords)
@@ -53,14 +73,22 @@ void Chair::command(LinearCoords coords)
         command.y = 0;
     }
 
-    // Use this to dance :)
-    // this->handleHalt(coords)
+    // apply deadband
+    command.x = abs(command.x)<DEADBAND ? 0 : command.x;
+    command.y = abs(command.y)<DEADBAND ? 0 : command.y;
 
+    command.x = command.x * this->speeds[this->currentSpeed];
+    command.y = command.y * this->speeds[this->currentSpeed];
+    
     float mappedX = Coordinates::map(command.x, STANDARDIZED_V_MIN, STANDARDIZED_V_MAX, OUTPUT_V_MIN, OUTPUT_V_MAX);
     float mappedY = Coordinates::map(command.y, STANDARDIZED_OMEGA_MIN, STANDARDIZED_OMEGA_MAX, OUTPUT_OMEGA_MIN, OUTPUT_OMEGA_MAX);
 
     float finalX = this->safetyBounds(mappedX);
     float finalY = this->safetyBounds(mappedY);
+    
+    /*sp(finalX);
+    sp(" | ");
+    spl(finalY);*/
 
     // Pass command to chair
     this->pinInterface->doAnalogWrite(this->vPin, finalX);

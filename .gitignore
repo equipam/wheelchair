@@ -110,6 +110,5 @@ dmypy.json
 
 .vscode
 output
-playground
 *.tar.xz
 arduino-1.8.19
