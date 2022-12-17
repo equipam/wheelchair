@@ -1,4 +1,5 @@
 #include "Chair.h"
+#include "Logging.h"
 
 Chair::Chair(int vPin, int omegaPin, int switchPin, PinInterface *pinInterface)
 {
@@ -72,22 +73,6 @@ void Chair::command(LinearCoords coords)
         command.y = 0;
     }
 
-    // Use this to dance :)
-    // this->handleHalt(coords)
-    /*float outputVDelta = OUTPUT_V_MAX - OUTPUT_V_MIN;
-    float avgOutputV = (OUTPUT_V_MAX + OUTPUT_V_MIN) / 2;
-    float output_v_min = avgOutputV - outputVDelta/2 * this->speeds[this->currentSpeed];
-    float output_v_max = avgOutputV + outputVDelta/2 * this->speeds[this->currentSpeed];
-
-    float outputOmegaDelta = OUTPUT_V_MAX - OUTPUT_V_MIN;
-    float avgOutputOmega = (OUTPUT_V_MAX + OUTPUT_V_MIN) / 2;
-    float output_omega_min = avgOutputOmega - outputOmegaDelta/2 * this->speeds[this->currentSpeed];
-    float output_omega_max = avgOutputOmega + outputOmegaDelta/2 * this->speeds[this->currentSpeed];
-
-    float mappedX = Coordinates::map(command.x, STANDARDIZED_V_MIN, STANDARDIZED_V_MAX, output_v_min, output_v_max);
-    float mappedY = Coordinates::map(command.y, STANDARDIZED_OMEGA_MIN,
-    STANDARDIZED_OMEGA_MAX, output_omega_min, output_omega_max);*/
-
     // apply deadband
     command.x = abs(command.x)<DEADBAND ? 0 : command.x;
     command.y = abs(command.y)<DEADBAND ? 0 : command.y;
@@ -100,9 +85,11 @@ void Chair::command(LinearCoords coords)
 
     float finalX = this->safetyBounds(mappedX);
     float finalY = this->safetyBounds(mappedY);
-    Serial.print(finalX);
-    Serial.print(" | ");
-    Serial.println(finalY);
+    
+    /*sp(finalX);
+    sp(" | ");
+    spl(finalY);*/
+
     // Pass command to chair
     this->pinInterface->doAnalogWrite(this->vPin, finalX);
     this->pinInterface->doAnalogWrite(this->omegaPin, finalY);
