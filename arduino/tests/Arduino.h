@@ -8,6 +8,7 @@
 
 #define INPUT 0
 #define OUTPUT 0
+#define INPUT_PULLUP 0
 
 int analogRead(int pin);
 void analogWrite(int pin, int val);
