@@ -14,13 +14,14 @@ void Chair::setup()
 {
     pinMode(this->vPin, OUTPUT);
     pinMode(this->omegaPin, OUTPUT);
-    pinMode(this->switchPin, INPUT);
+    pinMode(this->switchPin, INPUT_PULLUP);
 }
 
 
 void Chair::changeSpeed()
 {
-    int result = this->pinInterface->doDigitalRead(this->switchPin);
+    // The pin is 1 when the switch is off, hence the "not"
+    int result = !this->pinInterface->doDigitalRead(this->switchPin);
 
     if(result && !this->lastSwitchState)
     {
@@ -87,6 +88,10 @@ void Chair::command(LinearCoords coords)
     float mappedY = Coordinates::map(command.y, STANDARDIZED_OMEGA_MIN,
     STANDARDIZED_OMEGA_MAX, output_omega_min, output_omega_max);*/
 
+    // apply deadband
+    command.x = abs(command.x)<DEADBAND ? 0 : command.x;
+    command.y = abs(command.y)<DEADBAND ? 0 : command.y;
+
     command.x = command.x * this->speeds[this->currentSpeed];
     command.y = command.y * this->speeds[this->currentSpeed];
     
@@ -95,7 +100,9 @@ void Chair::command(LinearCoords coords)
 
     float finalX = this->safetyBounds(mappedX);
     float finalY = this->safetyBounds(mappedY);
-    
+    Serial.print(finalX);
+    Serial.print(" | ");
+    Serial.println(finalY);
     // Pass command to chair
     this->pinInterface->doAnalogWrite(this->vPin, finalX);
     this->pinInterface->doAnalogWrite(this->omegaPin, finalY);

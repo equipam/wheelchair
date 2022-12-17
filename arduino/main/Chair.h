@@ -17,19 +17,21 @@
 
 #define SPEEDS 3
 
+#define DEADBAND 0.05
+
 class Chair
 {
 private:
     int vPin;
     int omegaPin;
     int switchPin;
-    float speeds[3] = {0.1, 0.5, 1.0};
-    int currentSpeed = 0;
+    float speeds[SPEEDS] = {0.1, 0.2, 0.5};
     int lastSwitchState=0;
     PinInterface *pinInterface;
     bool halt = false;
     // void handleHalt(PolarCoords coords);
 public:
+    int currentSpeed = 0;
     Chair(int vPin, int omegaPin, int switchPin, PinInterface *pinInterface);
     void setup();
     void command(LinearCoords coords);
