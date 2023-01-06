@@ -13,6 +13,7 @@
 #define JOYSTICK_Y_PIN A2
 #define INTERRUPT_PIN 2
 #define INTERRUPT_READ_PIN 3
+#define SWITCH_PIN 3
 #define CHAIR_V_PIN 5
 #define CHAIR_OMEGA_PIN 6
 #define GREEN_LED_PIN 10
@@ -24,7 +25,7 @@
 RealPinInterface pinInterface;
 Led led(RED_LED_PIN, YELLOW_LED_PIN, GREEN_LED_PIN, &pinInterface);
 Joystick joystick(JOYSTICK_X_PIN, JOYSTICK_Y_PIN, &pinInterface);
-Chair chair(CHAIR_V_PIN, CHAIR_OMEGA_PIN, &pinInterface);
+Chair chair(CHAIR_V_PIN, CHAIR_OMEGA_PIN, SWITCH_PIN, &pinInterface);
 SerialInterface serialInterface;
 
 LinearCoords joystickPosition;
@@ -36,12 +37,12 @@ void setup()
   while (!Serial)
   {
   }
-  serialInterface.attach(Serial);
+  serialInterface.attach(&Serial);
 
   // Pin Setup
   joystick.setup();
   chair.setup();
-  led.setup()
+  led.setup();
 
   // Calibration process
   // joystick.calibrate(Serial);
