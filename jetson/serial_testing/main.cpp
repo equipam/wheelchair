@@ -1,11 +1,10 @@
 #include "../lib/SerialInterface.h"
-#include <stdlib.h>
-#include <stdio.h>
+#include <iostream>
 #include <time.h>
 
 int main()
 {
-    SerialInterface serial();
+    SerialInterface serial;
     char * port = "/dev/ttyUSB0";
     serial.setup(port);
     int overwrite = 0;
@@ -13,7 +12,7 @@ int main()
     std::cout << overwrite << std::endl;
     while (true)
     {
-        serial.sendPacket(overwrite, 0f, 0f);
+        serial.sendPacket(overwrite, 0.0, 0.0);
         counter++;
         if(counter == 1000)
         {
