@@ -11,10 +11,11 @@ private:
     int greenPin;
     PinInterface* pinInterface;
 public:
-    int currentHighPin = -1;
+    int lastStatus = -1;
     Led(int redPin, int yellowPin, int greenPin, PinInterface* pinInterface);
     void setup();
-    void update(int overwrite);
+    void update(int status);
+    void warning();
 };
 
 

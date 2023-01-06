@@ -19,7 +19,7 @@ InformationPacket SerialInterface::decodePacket(char * rawPacket)
 
     char *ptr;
     ptr = strtok(rawPacket, ";");
-    packet.overwrite = (bool)atoi(ptr);
+    packet.status = (int)atoi(ptr);
     ptr = strtok(NULL, ";");
     packet.x = (float)atoi(ptr) / 1023.0;
     ptr = strtok(NULL, ";");
@@ -31,7 +31,7 @@ InformationPacket SerialInterface::decodePacket(char * rawPacket)
 /// @return Returns latest packet
 InformationPacket SerialInterface::readPacket()
 {
-    InformationPacket packet = latestPacket;
+    InformationPacket packet = this->latestPacket;
     char inputBuffer[PACKET_SIZE];
     if (stream->available() > 0)
     {
@@ -39,6 +39,12 @@ InformationPacket SerialInterface::readPacket()
         {
             packet = decodePacket(inputBuffer);
             packet.timestamp = millis();
+            this->latestPacket = packet;
+        }
+        // Clear buffer to avoid clogging
+        while(stream->available() > 0)
+        {
+            char c = stream->read();
         }
     }
     return packet;

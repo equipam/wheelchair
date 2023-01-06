@@ -7,7 +7,7 @@
 
 struct InformationPacket
 {
-    bool overwrite;
+    int status;
     float x;
     float y;
     unsigned long timestamp;
@@ -17,7 +17,7 @@ class SerialInterface
 {
 private:
     Stream* stream;
-    InformationPacket latestPacket = {.overwrite = false, .x = 0.0, .y = 0.0, .timestamp = 0};
+    InformationPacket latestPacket = {.status = -1, .x = 0.0, .y = 0.0, .timestamp = 0};
 public:
     SerialInterface();
     void attach(Stream* io);

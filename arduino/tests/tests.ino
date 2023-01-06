@@ -167,12 +167,12 @@ test(serial_interface)
   serialInterface.attach(&ms);
 
   ms.input.print("0;0042;0069");
-  InformationPacket expectedPacket = {.overwrite=false, .x=42.0/1023.0, .y=69.0/1023.0};
+  InformationPacket expectedPacket = {.status=0, .x=42.0/1023.0, .y=69.0/1023.0};
 
   InformationPacket result;
   result = serialInterface.readPacket();
   
-  assertEqual(result.overwrite, expectedPacket.overwrite);
+  assertEqual(result.status, expectedPacket.status);
   assertEqual(result.x, expectedPacket.x);
   assertEqual(result.y, expectedPacket.y);
 }
@@ -181,14 +181,14 @@ test(decode)
 {
   SerialInterface serialInterface = SerialInterface();
 
-  InformationPacket expectedPacket = {.overwrite=false, .x=42.0/1023.0, .y=69.0/1023.0};
+  InformationPacket expectedPacket = {.status=0, .x=42.0/1023.0, .y=69.0/1023.0};
 
   char rawPacket[12] = "0;0042;0069";
 
   InformationPacket result;
   result = serialInterface.decodePacket(rawPacket);
   
-  assertEqual(result.overwrite, expectedPacket.overwrite);
+  assertEqual(result.status, expectedPacket.status);
   assertEqual(result.x, expectedPacket.x);
   assertEqual(result.y, expectedPacket.y);
 }

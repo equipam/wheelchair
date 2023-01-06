@@ -9,15 +9,13 @@ using LibSerial::SerialPort;
 
 class SerialInterface
 {
-private:
-    SerialPort serialStream;
-
 public:
+    SerialPort serialStream;
     SerialInterface();
     void setup(char *port);
     void cleanup();
-    std::string createPacket(bool overwrite, int x, int y);
-    void sendPacket(bool overwrite, int x, int y);
+    std::string createPacket(int status, int x, int y);
+    void sendPacket(int status, int x, int y);
 };
 
 #endif

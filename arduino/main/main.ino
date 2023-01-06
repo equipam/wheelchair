@@ -9,10 +9,8 @@
 #include "Logging.h"
 #include "Led.h"
 
-#define JOYSTICK_X_PIN A1
-#define JOYSTICK_Y_PIN A2
-#define INTERRUPT_PIN 2
-#define INTERRUPT_READ_PIN 3
+#define JOYSTICK_X_PIN A5
+#define JOYSTICK_Y_PIN A6
 #define SWITCH_PIN 3
 #define CHAIR_V_PIN 5
 #define CHAIR_OMEGA_PIN 6
@@ -50,15 +48,24 @@ void setup()
   return;
 }
 
+InformationPacket dummyPacket = {.status = 0, .x = 0, .y = 0, .timestamp = 0};
+
 void loop()
 {
   joystickPosition = joystick.position();
 
   incomingPacket = serialInterface.readPacket();
 
-  led.update(incomingPacket.overwrite);
+  if(millis() - incomingPacket.timestamp > 2000)
+  {
+    led.warning();
+    joystickPosition.x = 0;
+    joystickPosition.y = 0;
+  }
 
-  if (incomingPacket.overwrite == 2)
+  led.update(incomingPacket.status);
+
+  if (incomingPacket.status == 2)
   {
     joystickPosition.x = incomingPacket.x;
     joystickPosition.y = incomingPacket.y;

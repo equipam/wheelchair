@@ -84,6 +84,7 @@ jetson-test:
 arduino-test: sym-links
 	./arduino-1.8.19/arduino --upload ./arduino/tests/tests.ino --port $(ARDUINO_PORT)
 	timeout 10s screen $(ARDUINO_PORT) 9600
+	pkill screen
 
 arduino-invitro-test: sym-links
 	cd arduino/tests && ./compile-vitro && ./test-vitro

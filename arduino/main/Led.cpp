@@ -28,34 +28,41 @@ void Led::setup()
 }
 
 
-void Led::update(int overwrite)
+void Led::update(int status)
 {
-
-    int ledPin = -1;
-
-    switch (overwrite)
+    if (status != this->lastStatus)
     {
-    case 0:
-        ledPin = this->greenPin;
-        break;
-    case 1:
-        ledPin = this->yellowPin;
-        break;
-    case 2:
-        ledPin = this->redPin;
-        break;
-    default:
-        break;
-    }
-
-    if (ledPin != this->currentHighPin)
-    {
-        if (this->currentHighPin != -1)
+        switch (status)
         {
-            this->pinInterface->doDigitalWrite(this->currentHighPin, LOW);
+        case 0:
+            this->pinInterface->doDigitalWrite(this->greenPin, HIGH);
+            this->pinInterface->doDigitalWrite(this->yellowPin, LOW);
+            this->pinInterface->doDigitalWrite(this->redPin, LOW);
+            break;
+        case 1:
+            this->pinInterface->doDigitalWrite(this->greenPin, LOW);
+            this->pinInterface->doDigitalWrite(this->yellowPin, HIGH);
+            this->pinInterface->doDigitalWrite(this->redPin, LOW);
+            break;
+        case 2:
+            this->pinInterface->doDigitalWrite(this->greenPin, LOW);
+            this->pinInterface->doDigitalWrite(this->yellowPin, LOW);
+            this->pinInterface->doDigitalWrite(this->redPin, HIGH);
+            break;
+        default:
+            break;
         }
-        
-        this->pinInterface->doDigitalWrite(ledPin, HIGH);
-        this->currentHighPin = ledPin;
     }
+    this->lastStatus = status;
+}
+
+
+void Led::warning()
+{
+    this->pinInterface->doDigitalWrite(this-greenPin, LOW);
+    this->pinInterface->doDigitalWrite(this-yellowPin, LOW);
+    this->pinInterface->doDigitalWrite(this-redPin, HIGH);
+    delay(500);
+    this->pinInterface->doDigitalWrite(this-redPin, LOW);
+    delay(500);
 }
