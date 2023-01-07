@@ -59,10 +59,10 @@ void Led::update(int status)
 
 void Led::warning()
 {
-    this->pinInterface->doDigitalWrite(this-greenPin, LOW);
-    this->pinInterface->doDigitalWrite(this-yellowPin, LOW);
-    this->pinInterface->doDigitalWrite(this-redPin, HIGH);
+    this->pinInterface->doDigitalWrite(this->greenPin, LOW);
+    this->pinInterface->doDigitalWrite(this->yellowPin, LOW);
+    this->pinInterface->doDigitalWrite(this->redPin, HIGH);
     delay(500);
-    this->pinInterface->doDigitalWrite(this-redPin, LOW);
+    this->pinInterface->doDigitalWrite(this->redPin, LOW);
     delay(500);
 }
