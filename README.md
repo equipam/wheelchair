@@ -1,7 +1,7 @@
 # Wheelchair
 
 This repository holds the code developed for Systems Engineering @FEUP in 2022/2023.
-Its purpose is to control an electric wheelchair and, using sensors, avoid collisions.
+Its purpose is to control an electric wheelchair and, using a SSLidar sensor, avoid collisions.
 
 ---
 ## Windows development dependencies
