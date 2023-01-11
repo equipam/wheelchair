@@ -7,6 +7,7 @@
 #include "Joystick.h"
 #include "Chair.h"
 #include "SerialInterface.h"
+#include "Led.h"
 
 #define FAKE_PIN_AMMONT 5
 
@@ -167,12 +168,12 @@ test(serial_interface)
   serialInterface.attach(&ms);
 
   ms.input.print("0;0042;0069");
-  InformationPacket expectedPacket = {.overwrite=false, .x=42.0/1023.0, .y=69.0/1023.0};
+  InformationPacket expectedPacket = {.status=0, .x=42.0/1023.0, .y=69.0/1023.0};
 
   InformationPacket result;
   result = serialInterface.readPacket();
   
-  assertEqual(result.overwrite, expectedPacket.overwrite);
+  assertEqual(result.status, expectedPacket.status);
   assertEqual(result.x, expectedPacket.x);
   assertEqual(result.y, expectedPacket.y);
 }
@@ -181,16 +182,51 @@ test(decode)
 {
   SerialInterface serialInterface = SerialInterface();
 
-  InformationPacket expectedPacket = {.overwrite=false, .x=42.0/1023.0, .y=69.0/1023.0};
+  InformationPacket expectedPacket = {.status=0, .x=42.0/1023.0, .y=69.0/1023.0};
 
   char rawPacket[12] = "0;0042;0069";
 
   InformationPacket result;
   result = serialInterface.decodePacket(rawPacket);
   
-  assertEqual(result.overwrite, expectedPacket.overwrite);
+  assertEqual(result.status, expectedPacket.status);
   assertEqual(result.x, expectedPacket.x);
   assertEqual(result.y, expectedPacket.y);
+}
+
+
+test(leds)
+{
+  clearPins();
+
+  MockPinInterface pinInterface;
+  uint8_t redPin = 0;
+  uint8_t yellowPin = 1;
+  uint8_t greenPin = 2;
+
+  Led led(redPin, yellowPin, greenPin, &pinInterface);
+
+  assertEqual(pins[redPin], 0);
+  assertEqual(pins[yellowPin], 0);
+  assertEqual(pins[greenPin], 0);
+
+  led.update(0);
+
+  assertEqual(pins[redPin], 0);
+  assertEqual(pins[yellowPin], 0);
+  assertEqual(pins[greenPin], 1);
+
+  led.update(1);
+
+  assertEqual(pins[redPin], 0);
+  assertEqual(pins[yellowPin], 1);
+  assertEqual(pins[greenPin], 0);
+
+  led.update(2);
+
+  assertEqual(pins[redPin], 1);
+  assertEqual(pins[yellowPin], 0);
+  assertEqual(pins[greenPin], 0);
 }
 
 

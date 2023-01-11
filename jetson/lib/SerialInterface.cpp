@@ -35,7 +35,6 @@ void SerialInterface::setup(char *port)
     serialStream.SetFlowControl(LibSerial::FlowControl::FLOW_CONTROL_NONE);
     serialStream.SetParity(LibSerial::Parity::PARITY_NONE);
     serialStream.SetStopBits(LibSerial::StopBits::STOP_BITS_1);
-
     return;
 }
 
@@ -47,16 +46,16 @@ void SerialInterface::cleanup()
 }
 
 /// @brief Creates a fixed length char information packet to relay
-/// Example: halt=1, x=1023 and y=1023 returns "1;1023;1023"
-/// @param halt
+/// Example: status=1, x=1023 and y=1023 returns "1;1023;1023"
+/// @param status
 /// @param x
 /// @param y
 /// @return Returns a fixed length char array of the packet
-std::string SerialInterface::createPacket(bool halt, int x, int y)
+std::string SerialInterface::createPacket(int status, int x, int y)
 {
     // char send[12] = "1;0001;0069";
-    char send[11] = "";
-    send[0] = '0' + halt;
+    char send[11] = {'\0'};
+    send[0] = '0' + status;
     send[1] = ';';
     send[2] = '0' + x / 1000 % 10;
     send[3] = '0' + x / 100 % 10;
@@ -72,12 +71,12 @@ std::string SerialInterface::createPacket(bool halt, int x, int y)
 }
 
 /// @brief Creates and sends a packet to the serial port
-/// @param halt
+/// @param status
 /// @param x
 /// @param y
-void SerialInterface::sendPacket(bool halt, int x, int y)
+void SerialInterface::sendPacket(int status, int x, int y)
 {
-    std::string send = createPacket(halt, x, y);
+    std::string send = createPacket(status, x, y);
 
     try
     {
